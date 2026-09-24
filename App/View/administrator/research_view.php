@@ -14,6 +14,11 @@ $haralick = $has_features ? [
   'Energy'        => $results->__get('rre_energy'),
   'Homogeneity'   => $results->__get('rre_homogeneity'),
 ] : [];
+
+// Values written into <script> go through json_encode with every HTML-sensitive
+// character escaped, so a stored value can never close the string or the tag.
+$empp_js_flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+$empp_image_url = $_ENV['BASE_IMG'] . 'research/' . rawurlencode(basename((string) $research->__get('ree_file')));
 ?>
 <style>
   .study-image {
@@ -418,8 +423,8 @@ $haralick = $has_features ? [
 async function processHaralick() {
     const button = document.getElementById('haralickBtn');
     const originalText = button.textContent;
-    const imageId = "<?= $this->getView()->research->__get('ree_id'); ?>";
-    const imageUrl = "<?=$_ENV['BASE_IMG'];?>research/<?= $this->getView()->research->__get('ree_file'); ?>";
+    const imageId = "<?= (int) $research->__get('ree_id'); ?>";
+    const imageUrl = <?= json_encode($empp_image_url, $empp_js_flags); ?>;
 
     try {
         button.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
@@ -548,9 +553,9 @@ async function predictPorosity() {
         // Modelo novo (MLflow /invocations): 7 features em ingles, formato dataframe_split.
         // NAO usa mais Id, Composition, Rotation, Translation (o modelo os ignora).
         const porosityFeatures = {
-            Syringe_flow_rate: parseFloat(getValue(<?= $this->getView()->research->__get('ree_flow'); ?>, 0)),
-            Tension: parseFloat(getValue(<?= $this->getView()->research->__get('ree_voltage'); ?>, 0)),
-            Distance: parseFloat(getValue(<?= $this->getView()->research->__get('ree_distance'); ?>, 0)),
+            Syringe_flow_rate: parseFloat(getValue(<?= json_encode((float) $research->__get('ree_flow')); ?>, 0)),
+            Tension: parseFloat(getValue(<?= json_encode((float) $research->__get('ree_voltage')); ?>, 0)),
+            Distance: parseFloat(getValue(<?= json_encode((float) $research->__get('ree_distance')); ?>, 0)),
             Dissimilarity: parseFloat(getValue(<?= $results ? json_encode((float) $results->__get('rre_dissimilarity')) : 'null'; ?>, 0)),
             Correlation: parseFloat(getValue(<?= $results ? json_encode((float) $results->__get('rre_correlation')) : 'null'; ?>, 0)),
             Energy: parseFloat(getValue(<?= $results ? json_encode((float) $results->__get('rre_energy')) : 'null'; ?>, 0)),
@@ -598,7 +603,7 @@ async function predictPorosity() {
         
             // Redirect after success (if needed)
             setTimeout(() => {
-                window.location.href = "<?= $_ENV['BASE_URL'] ?>dashboard/researcher/research/view/<?= $this->getView()->research->__get('ree_id'); ?>";
+                window.location.href = "<?= $_ENV['BASE_URL'] ?>dashboard/researcher/research/view/<?= (int) $research->__get('ree_id'); ?>";
             }, 2000);
         }
 
@@ -658,7 +663,7 @@ function updatePorosityDisplay(porosityValue) {
 async function savePorosityResult(porosityValue) {
     // Optionally: save porosity result to database
     try {
-        const researchId = "<?= $this->getView()->research->__get('ree_id'); ?>";
+        const researchId = "<?= (int) $research->__get('ree_id'); ?>";
         const formData = new FormData();
         formData.append('fk_research_ree_id', researchId);
         formData.append('rre_porosity', porosityValue);
@@ -709,7 +714,7 @@ function showNotification(type, message) {
 
     const study = {
         id: <?= (int) $research->__get('ree_id'); ?>,
-        imageUrl: <?= json_encode($_ENV['BASE_IMG'] . 'research/' . $research->__get('ree_file')); ?>,
+        imageUrl: <?= json_encode($empp_image_url, $empp_js_flags); ?>,
         flow: <?= json_encode((float) $research->__get('ree_flow')); ?>,
         voltage: <?= json_encode((float) $research->__get('ree_voltage')); ?>,
         distance: <?= json_encode((float) $research->__get('ree_distance')); ?>

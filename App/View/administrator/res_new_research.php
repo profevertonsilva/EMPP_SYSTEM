@@ -60,6 +60,7 @@
                 </div>
               </div>
 
+              <?php // Only lets the form warn when no image was uploaded; the server uses the session value ?>
               <input type="hidden" name="ree_file" id="ree_file" value="<?= htmlspecialchars($_SESSION['ree_file'] ?? ''); ?>">
             </div>
             <div class="card-footer d-flex flex-wrap justify-content-between gap-2">

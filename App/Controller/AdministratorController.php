@@ -406,7 +406,14 @@ class AdministratorController extends Action{
         $this->requireLogin();
         $ree_name = $_POST['ree_name'];
         $ree_description = $_POST['ree_description'];
-        $ree_file = $_POST['ree_file'];
+        // The image is the one this session uploaded (upload_research.php names it
+        // <md5>.jpg), never a file name from the form: the name ends up in pages
+        // other users open, including administrators.
+        $ree_file = $_SESSION['ree_file'] ?? '';
+        if (!preg_match('/^[a-f0-9]{32}\.jpg$/', $ree_file)) {
+            header("Location: /dashboard/researcher/research/new");
+            exit;
+        }
         $ree_flow = $_POST['ree_flow'];
         $ree_voltage = $_POST['ree_voltage'];
         $ree_distance = $_POST['ree_distance'];
@@ -439,6 +446,8 @@ class AdministratorController extends Action{
         $researchDAO = new ResearchDAO();
         $researchId = $researchDAO->create($researchModel);
         if($researchId){
+            // One upload, one study
+            unset($_SESSION['ree_file']);
             header("Location: /dashboard/researcher/research/view/" . $researchId . "");
         }
     }
