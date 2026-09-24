@@ -1,0 +1,797 @@
+/*
+* empp.css
+* EMPP theme layer. Loaded after the Sneat core/theme CSS and overrides it.
+* Direction: scientific instrument — logo blue, cool neutrals, IBM Plex,
+* numbers set in mono with tabular figures.
+******************************************************************************/
+
+:root {
+  /* Brand (sampled from the EMPP logo) */
+  --empp-primary: #34498c;
+  --empp-primary-rgb: 52, 73, 140;
+  --empp-primary-hover: #2a3c75;
+  --empp-primary-active: #233264;
+  --empp-primary-soft: #eceff7;
+  --empp-primary-deep: #1a2547;
+
+  /* Neutrals */
+  --empp-ink: #19202e;
+  --empp-text: #3c4557;
+  --empp-muted: #6a7284;
+  --empp-line: #e1e4ea;
+  --empp-line-strong: #cdd2db;
+  --empp-bg: #f3f4f6;
+  --empp-surface: #ffffff;
+
+  /* Status */
+  --empp-success: #1f7a5a;
+  --empp-warning: #a86400;
+  --empp-danger: #b3261e;
+
+  /* Type */
+  --empp-font: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --empp-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+
+  /* Shape */
+  --empp-radius: 6px;
+  --empp-radius-sm: 4px;
+  --empp-shadow: 0 1px 2px rgba(25, 32, 46, 0.06);
+
+  /* Bootstrap variables */
+  --bs-primary: var(--empp-primary);
+  --bs-primary-rgb: var(--empp-primary-rgb);
+  --bs-body-font-family: var(--empp-font);
+  --bs-font-sans-serif: var(--empp-font);
+  --bs-font-monospace: var(--empp-mono);
+  --bs-body-color: var(--empp-text);
+  --bs-body-bg: var(--empp-bg);
+  --bs-border-color: var(--empp-line);
+  --bs-link-color: var(--empp-primary);
+  --bs-link-hover-color: var(--empp-primary-hover);
+}
+
+/*
+* Base
+******************************************************************************/
+
+body {
+  font-family: var(--empp-font);
+  color: var(--empp-text);
+  background-color: var(--empp-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  color: var(--empp-ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: var(--empp-primary);
+}
+a:hover {
+  color: var(--empp-primary-hover);
+}
+
+.text-primary {
+  color: var(--empp-primary) !important;
+}
+.bg-primary {
+  background-color: var(--empp-primary) !important;
+}
+.text-muted {
+  color: var(--empp-muted) !important;
+}
+
+code, kbd, pre, samp {
+  font-family: var(--empp-mono);
+}
+
+::selection {
+  background: rgba(var(--empp-primary-rgb), 0.18);
+}
+
+/*
+* Instrument utilities — for data readouts across the app
+******************************************************************************/
+
+/* Small uppercase label above a value or section */
+.empp-eyebrow {
+  display: block;
+  font-family: var(--empp-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--empp-muted);
+}
+
+/* Any number that should line up in columns */
+.empp-num {
+  font-family: var(--empp-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Large measured/predicted value with its unit */
+.empp-readout {
+  font-family: var(--empp-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 2.25rem;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--empp-ink);
+  letter-spacing: -0.02em;
+}
+.empp-readout .empp-unit {
+  font-size: 0.5em;
+  font-weight: 400;
+  color: var(--empp-muted);
+  margin-left: 0.3em;
+}
+
+/*
+* Cards
+******************************************************************************/
+
+.card {
+  border: 1px solid var(--empp-line);
+  border-radius: var(--empp-radius);
+  box-shadow: var(--empp-shadow);
+}
+.card-header {
+  border-bottom: 1px solid var(--empp-line);
+  color: var(--empp-ink);
+  font-weight: 600;
+}
+.card-header + .card-body {
+  padding-top: 1.5rem !important;
+}
+.card-footer {
+  border-top: 1px solid var(--empp-line);
+}
+
+/*
+* Buttons
+******************************************************************************/
+
+.btn {
+  font-weight: 500;
+  border-radius: var(--empp-radius-sm);
+  letter-spacing: 0;
+}
+.btn.rounded-pill {
+  border-radius: var(--empp-radius-sm) !important;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: var(--empp-primary);
+  border-color: var(--empp-primary);
+  box-shadow: none;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary.focus {
+  color: #fff;
+  background-color: var(--empp-primary-hover);
+  border-color: var(--empp-primary-hover);
+  box-shadow: none;
+  transform: none;
+}
+.btn-primary:active,
+.btn-primary.active,
+.btn-check:checked + .btn-primary,
+.show > .btn-primary.dropdown-toggle {
+  color: #fff;
+  background-color: var(--empp-primary-active) !important;
+  border-color: var(--empp-primary-active) !important;
+}
+.btn-primary:disabled,
+.btn-primary.disabled {
+  background-color: var(--empp-primary);
+  border-color: var(--empp-primary);
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+.btn-outline-primary {
+  color: var(--empp-primary);
+  border-color: var(--empp-primary);
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:active,
+.btn-outline-primary.active {
+  color: #fff;
+  background-color: var(--empp-primary);
+  border-color: var(--empp-primary);
+  box-shadow: none;
+  transform: none;
+}
+
+.btn-label-primary {
+  color: var(--empp-primary);
+  background-color: var(--empp-primary-soft);
+  border-color: transparent;
+}
+
+.btn:focus-visible {
+  outline: 2px solid rgba(var(--empp-primary-rgb), 0.45);
+  outline-offset: 2px;
+}
+
+/*
+* Forms
+******************************************************************************/
+
+.form-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--empp-text);
+}
+
+.form-control,
+.form-select,
+.input-group-text {
+  border-color: var(--empp-line-strong);
+  border-radius: var(--empp-radius-sm);
+  color: var(--empp-ink);
+}
+.form-control::placeholder {
+  color: #9aa1af;
+}
+.form-control:focus,
+.form-select:focus,
+.input-group:focus-within .form-control,
+.input-group:focus-within .input-group-text {
+  border-color: var(--empp-primary) !important;
+  box-shadow: 0 0 0 3px rgba(var(--empp-primary-rgb), 0.12) !important;
+}
+.input-group:focus-within .form-control,
+.input-group:focus-within .input-group-text {
+  box-shadow: none !important;
+}
+.input-group:focus-within {
+  border-radius: var(--empp-radius-sm);
+  box-shadow: 0 0 0 3px rgba(var(--empp-primary-rgb), 0.12);
+}
+
+/* Invalid wins over the focus ring, so an error stays visible while typing */
+.form-control.is-invalid,
+.form-control.is-invalid:focus,
+.input-group:focus-within .form-control.is-invalid {
+  border-color: var(--empp-danger) !important;
+  box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.12) !important;
+}
+.input-group:has(.form-control.is-invalid) .input-group-text {
+  border-color: var(--empp-danger) !important;
+}
+
+.form-check-input:focus {
+  border-color: var(--empp-primary);
+  box-shadow: 0 0 0 3px rgba(var(--empp-primary-rgb), 0.15);
+}
+.form-check-input:checked,
+.form-check-input[type='checkbox']:indeterminate {
+  background-color: var(--empp-primary);
+  border-color: var(--empp-primary);
+  box-shadow: none;
+}
+
+/*
+* Tables & DataTables
+******************************************************************************/
+
+.table {
+  --bs-table-color: var(--empp-text);
+  border-color: var(--empp-line);
+}
+.table th,
+.table thead th {
+  font-family: var(--empp-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--empp-muted);
+}
+.table td {
+  color: var(--empp-text);
+}
+
+/* Whole-row links (tr[data-href], see empp-rows.js) */
+.table tr[data-href] {
+  cursor: pointer;
+}
+.table tr[data-href]:hover > td {
+  --bs-table-accent-bg: var(--empp-primary-soft);
+  --bs-table-bg-state: var(--empp-primary-soft);
+  background-color: var(--empp-primary-soft);
+}
+.table tr[data-href]:focus-visible {
+  outline: 2px solid rgba(var(--empp-primary-rgb), 0.45);
+  outline-offset: -2px;
+}
+
+.page-item.active .page-link,
+.pagination li.active > a:not(.page-link) {
+  background-color: var(--empp-primary) !important;
+  border-color: var(--empp-primary) !important;
+  box-shadow: none !important;
+}
+.page-link {
+  color: var(--empp-text);
+  border-radius: var(--empp-radius-sm) !important;
+}
+
+/*
+* Misc components
+******************************************************************************/
+
+.dropdown-menu {
+  border: 1px solid var(--empp-line);
+  border-radius: var(--empp-radius);
+  box-shadow: 0 8px 24px rgba(25, 32, 46, 0.1);
+}
+.dropdown-item:not(.disabled):active,
+.dropdown-item:not(.disabled).active {
+  color: var(--empp-primary);
+  background-color: var(--empp-primary-soft);
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .nav-link.active:hover,
+.nav-pills .nav-link.active:focus {
+  background-color: var(--empp-primary);
+  box-shadow: none;
+}
+
+.progress-bar {
+  background-color: var(--empp-primary);
+  box-shadow: none;
+}
+
+.bg-label-primary {
+  color: var(--empp-primary) !important;
+  background-color: var(--empp-primary-soft) !important;
+}
+
+.alert {
+  border-radius: var(--empp-radius);
+}
+
+.swal2-popup {
+  font-family: var(--empp-font);
+  border-radius: var(--empp-radius) !important;
+}
+.swal2-styled.swal2-confirm {
+  background-color: var(--empp-primary) !important;
+  border-radius: var(--empp-radius-sm) !important;
+}
+
+/*
+* Layout: side menu
+******************************************************************************/
+
+.bg-menu-theme {
+  background-color: var(--empp-surface) !important;
+  color: var(--empp-text);
+}
+.layout-menu {
+  border-right: 1px solid var(--empp-line);
+  box-shadow: none !important;
+}
+
+.menu .app-brand.demo {
+  height: auto;
+  margin-top: 0;
+  padding-top: 1.5rem;
+  padding-bottom: 1.25rem;
+}
+.menu .app-brand-logo img {
+  width: 100%;
+  max-width: 168px !important;
+  height: auto;
+}
+
+.menu-inner-shadow {
+  display: none !important;
+}
+
+.layout-menu hr {
+  margin: 0.75rem 1.5rem;
+  border-color: var(--empp-line);
+  opacity: 1;
+}
+
+.bg-menu-theme .menu-inner > .menu-item > .menu-link {
+  margin: 1px 0.75rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--empp-radius-sm);
+  color: var(--empp-text);
+  font-weight: 500;
+}
+.bg-menu-theme .menu-inner > .menu-item:not(.active) > .menu-link:hover {
+  background-color: var(--empp-bg) !important;
+  color: var(--empp-ink);
+}
+.bg-menu-theme .menu-inner > .menu-item.active > .menu-link {
+  color: var(--empp-primary) !important;
+  background-color: var(--empp-primary-soft) !important;
+  font-weight: 600;
+}
+.layout-wrapper:not(.layout-horizontal) .bg-menu-theme .menu-inner > .menu-item.active:before {
+  background: var(--empp-primary);
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  right: auto;
+  left: 0;
+}
+.bg-menu-theme .menu-header {
+  margin: 1.25rem 1.5rem 0.375rem;
+  padding: 0;
+}
+.bg-menu-theme .menu-header:before {
+  display: none;
+}
+.bg-menu-theme .menu-header .menu-header-text {
+  font-family: var(--empp-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--empp-muted);
+}
+.bg-menu-theme .menu-inner > .menu-header:first-child {
+  margin-top: 0.25rem;
+}
+
+.bg-menu-theme .menu-icon {
+  width: 1.25rem;
+  text-align: center;
+  font-size: 1rem;
+  color: inherit;
+}
+
+/*
+* Layout: top navbar, content, footer
+******************************************************************************/
+
+.bg-navbar-theme {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: saturate(160%) blur(6px);
+  color: var(--empp-text);
+}
+.layout-navbar.navbar-detached {
+  border: 1px solid var(--empp-line);
+  border-radius: var(--empp-radius);
+  box-shadow: var(--empp-shadow) !important;
+}
+
+.empp-navbar-title {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.empp-navbar-title .empp-page {
+  color: var(--empp-ink);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.empp-user-meta {
+  text-align: right;
+  line-height: 1.2;
+}
+.empp-user-meta .empp-user-name {
+  display: block;
+  color: var(--empp-ink);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.avatar img {
+  object-fit: cover;
+  aspect-ratio: 1;
+}
+
+.bg-footer-theme {
+  background-color: transparent !important;
+  color: var(--empp-muted);
+  font-size: 0.8125rem;
+}
+
+/*
+* Step indicator (multi-step flows)
+******************************************************************************/
+
+.empp-steps {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.empp-steps li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--empp-muted);
+}
+.empp-steps li span {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--empp-mono);
+  font-size: 0.6875rem;
+  border: 2px solid var(--empp-line-strong);
+  background: var(--empp-surface);
+}
+.empp-steps li.is-current {
+  color: var(--empp-ink);
+  font-weight: 600;
+}
+.empp-steps li.is-current span {
+  border-color: var(--empp-primary);
+  color: var(--empp-primary);
+}
+.empp-steps li.is-done span {
+  border-color: var(--empp-primary);
+  background: var(--empp-primary);
+  color: #fff;
+}
+
+/*
+* Dropzone (file upload)
+******************************************************************************/
+
+.empp-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 280px;
+  padding: 2rem;
+  text-align: center;
+  border: 2px dashed var(--empp-line-strong);
+  border-radius: var(--empp-radius);
+  background: var(--empp-bg);
+  color: var(--empp-muted);
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.empp-dropzone:hover,
+.empp-dropzone.is-dragover {
+  border-color: var(--empp-primary);
+  background: var(--empp-primary-soft);
+}
+.empp-dropzone i {
+  font-size: 2.5rem;
+  color: var(--empp-primary);
+}
+.empp-dropzone strong {
+  color: var(--empp-ink);
+  font-weight: 600;
+}
+
+/*
+* Account pages (profile, password, photo)
+******************************************************************************/
+
+.account-page {
+  max-width: 720px;
+}
+.account-tabs {
+  border-bottom: 1px solid var(--empp-line);
+}
+.account-tabs .nav-link {
+  padding: 0.625rem 0.25rem;
+  margin-right: 1.5rem;
+  border-bottom: 2px solid transparent;
+  color: var(--empp-muted);
+  font-weight: 500;
+}
+.account-tabs .nav-link:hover {
+  color: var(--empp-ink);
+}
+.account-tabs .nav-link.active {
+  color: var(--empp-primary);
+  border-bottom-color: var(--empp-primary);
+}
+
+/* Older single-form pages centred with the template's auth wrapper */
+.layout-page .authentication-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/*
+* Auth screens (sign in, sign up, forgot password)
+******************************************************************************/
+
+.auth-shell {
+  display: grid;
+  grid-template-columns: minmax(340px, 44%) 1fr;
+  min-height: 100vh;
+  background: var(--empp-surface);
+}
+
+/* Left: brand panel with nanofiber texture */
+.auth-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2.5rem;
+  padding: 3rem clamp(2rem, 4vw, 4rem);
+  color: #d9def0;
+  background-color: var(--empp-primary-deep);
+  overflow: hidden;
+  isolation: isolate;
+}
+.auth-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: url('../../../img/fibers.svg') center / cover no-repeat;
+  opacity: 0.55;
+}
+.auth-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(26, 37, 71, 0.35) 0%, rgba(26, 37, 71, 0.2) 35%, rgba(26, 37, 71, 0.94) 72%),
+    linear-gradient(90deg, rgba(52, 73, 140, 0.35), rgba(26, 37, 71, 0));
+}
+
+.auth-panel-logo {
+  width: 180px;
+  height: auto;
+}
+
+.auth-panel h1 {
+  color: #fff;
+  font-size: clamp(1.75rem, 2.6vw, 2.375rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  max-width: 18ch;
+}
+.auth-panel p {
+  max-width: 44ch;
+  margin-bottom: 0;
+  color: #bfc7e0;
+}
+.auth-panel .empp-eyebrow {
+  color: #8f9bc4;
+  margin-bottom: 0.75rem;
+}
+
+/* Workflow steps: SEM image → features → porosity → filtration */
+.auth-steps {
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.auth-steps li {
+  display: grid;
+  grid-template-columns: 2.25rem 1fr;
+  align-items: baseline;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  color: #e6e9f4;
+  font-size: 0.9375rem;
+}
+.auth-steps li span {
+  font-family: var(--empp-mono);
+  font-size: 0.75rem;
+  color: #8f9bc4;
+}
+
+.auth-panel-foot {
+  font-size: 0.8125rem;
+  color: #8f9bc4;
+}
+
+/* Right: form column */
+.auth-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}
+.auth-form {
+  width: 100%;
+  max-width: 400px;
+}
+.auth-form.auth-form-wide {
+  max-width: 560px;
+}
+.auth-form-logo {
+  display: none;
+  width: 150px;
+  height: auto;
+  margin-bottom: 2rem;
+}
+.auth-form h2 {
+  font-size: 1.625rem;
+  margin: 0.5rem 0 0.5rem;
+}
+.auth-form .auth-lead {
+  color: var(--empp-muted);
+  margin-bottom: 2rem;
+}
+.auth-form .btn-primary {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+.auth-switch {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--empp-line);
+  color: var(--empp-muted);
+  font-size: 0.875rem;
+}
+.auth-switch a {
+  font-weight: 500;
+}
+
+/* Select2 (sign up country field) */
+.auth-form .select2-container {
+  width: 100% !important;
+}
+.auth-form .select2-container--default .select2-selection--single {
+  height: calc(2.25rem + 2px);
+  border-color: var(--empp-line-strong);
+  border-radius: var(--empp-radius-sm);
+}
+.auth-form .select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 2.25rem;
+  padding-left: 0.875rem;
+  color: var(--empp-ink);
+}
+.auth-form .select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 2.25rem;
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+  background-color: var(--empp-primary);
+}
+.select2-dropdown {
+  border-color: var(--empp-line-strong);
+  font-family: var(--empp-font);
+}
+
+@media (max-width: 991.98px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+  }
+  .auth-panel {
+    display: none;
+  }
+  .auth-form-logo {
+    display: block;
+  }
+  .auth-main {
+    align-items: flex-start;
+    padding: 2.5rem 1rem;
+  }
+}
