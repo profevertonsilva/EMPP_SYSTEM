@@ -188,7 +188,7 @@ O menu lateral muda conforme o perfil (`menu_administrator.php` × `menu_researc
 
 | Tela | Rota | Descrição |
 |---|---|---|
-| Login | `/sign-in` → POST `/signin` | E-mail e senha. Se o hash SHA-1 bate, grava `log_id`, `log_type`, `log_status` e `res_photo` na sessão e redireciona conforme o perfil (`/dashboard/administrator` ou `/dashboard/researcher`). |
+| Login | `/sign-in` → POST `/signin` | E-mail e senha. Se a senha confere, renova o ID da sessão, grava `log_id`, `log_type`, `log_status` e `res_photo` e redireciona conforme o perfil (`/dashboard/administrator` ou `/dashboard/researcher`). E-mail inexistente e senha errada recebem a mesma mensagem (`?error=1`). |
 | Cadastro | `/sign-up` → POST `/signup` | Cria um registro em `login` (perfil `R`) e outro em `researcher`. Campos: nome, instituição, grau acadêmico (Undergraduate Student, Bachelor, Master, PhD ou *Other* com texto livre), finalidade de uso, país (lista da tabela `country`, com busca via Select2), e-mail, senha e aceite da política de privacidade/termos (exibida em modal). |
 | Esqueci a senha | `/forgot-password` | Só a tela. **O envio ainda não foi implementado** (o formulário aponta para `index.html`). |
 | Logout | `/signout` | Destrói a sessão e volta ao login. |
@@ -416,7 +416,7 @@ routes   (tabela de roteamento do framework)
 
 | Tabela | Conteúdo |
 |---|---|
-| `login` | Credenciais: e-mail, senha (SHA-1), status, tipo `R`/`A`, token e data de criação. |
+| `login` | Credenciais: e-mail, senha (bcrypt via `password_hash`; hashes SHA-1 legados são aceitos e convertidos no login), status, tipo `R`/`A`, token e data de criação. |
 | `researcher` | Perfil: nome, foto, instituição, finalidade, grau acadêmico, país e FK para `login`. |
 | `country` | Lista de países (ISO2, ISO3, nome). |
 | `research` | Estudo: nome, descrição, arquivo de imagem, vazão, tensão, distância (e as colunas não usadas composição, rotação e translação), data e FK do dono. |
@@ -506,7 +506,8 @@ cp .env.example .env
 # 3. Banco
 #    crie o banco, rode o script corrigido (ver "Banco de dados"),
 #    popule `country` e `routes` e crie um usuário administrador
-#    (login.log_type = 'A', senha em SHA-1)
+#    (login.log_type = 'A'; gere o hash com
+#     php -r "echo password_hash('SENHA', PASSWORD_DEFAULT);")
 
 # 4. Permissões de escrita
 #    resources/dashboard/assets/img/research/
@@ -550,8 +551,7 @@ Servem para hospedagem sem SSH (LiteSpeed/lsapi):
 ## Limitações e pontos de atenção
 
 **Segurança**
-- As senhas usam **SHA-1 sem salt**. O ideal é migrar para `password_hash()`/`password_verify()` (já existe um esboço em `vendor/FW/DB/migrarSenhas.php`, mas para outra tabela).
-- O login não trata e-mail inexistente nem senha errada: a tela fica em branco em vez de mostrar uma mensagem.
+- Senhas antigas ainda podem estar em **SHA-1 sem salt** no banco. Elas são convertidas para bcrypt no próximo login de cada usuário; contas que nunca mais entrarem continuam em SHA-1 até isso acontecer.
 - O cadastro não verifica se o e-mail já existe e não confirma o e-mail (`log_confirmed` não é usado).
 - Não há proteção CSRF nos formulários (há um campo `csrf_token` no upload, sem validação no servidor).
 - O upload de imagem valida pelo MIME enviado pelo navegador. Vale validar também com `finfo`/`getimagesize` e reconverter de fato para JPG (hoje o arquivo só é renomeado para `.jpg`).
