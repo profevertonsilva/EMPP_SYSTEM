@@ -73,7 +73,7 @@ class LoginController extends Action{
             
             $loginModel = new LoginModel();
             $loginModel->__set('log_email', $email);
-            $loginModel->__set('log_password', sha1($password));
+            $loginModel->__set('log_password', $global->hashSenha($password));
             $loginModel->__set('log_type', 'R');
             
             $loginDAO = new LoginDAO();
@@ -106,12 +106,19 @@ class LoginController extends Action{
         // Validate the data
         if(!empty($email) && !empty($password)){
 
+            $global = new FuncoesGlobais();
             $loginDAO = new LoginDAO();
             $login = $loginDAO->searchByEmail($email);
-            $passworddb = $login->log_password;
-            
-            
-            if($passworddb === sha1($password)){
+
+            if($login && $global->verificarSenha($password, $login->log_password)){
+                // Accounts still on the legacy SHA-1 hash move to bcrypt on this login
+                if($global->senhaPrecisaRehash($login->log_password)){
+                    $rehash = new LoginModel();
+                    $rehash->log_id = $login->log_id;
+                    $rehash->log_password = $global->hashSenha($password);
+                    $loginDAO->updatePassword($rehash);
+                }
+                session_regenerate_id(true);
                 $_SESSION['log_id'] = $login->log_id;
                 $_SESSION['log_type'] = $login->log_type;
                 $_SESSION['log_status'] = $login->log_status;
@@ -121,11 +128,13 @@ class LoginController extends Action{
                 }else{
                     header('Location: /dashboard/researcher');
                 }
+                exit;
             }
-
-            
-            
         }
+
+        // Same answer for unknown email and wrong password
+        header('Location: /sign-in?error=1');
+        exit;
     }
     public function actionSignOut(){
         session_destroy();

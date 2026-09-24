@@ -166,13 +166,13 @@ class AdministratorController extends Action{
         $new_password = $_POST['new_password'];
         $confirm_new_password = $_POST['confirm_new_password'];
 
-        if($current_password != "" && ($new_password === $confirm_new_password)){
+        if($current_password != "" && $new_password != "" && ($new_password === $confirm_new_password)){
             $loginDAO = new LoginDAO();
             $password = $loginDAO->searchById($id)->log_password;
-            if (sha1($current_password) == $password) {
+            if ($global->verificarSenha($current_password, $password)) {
                 $loginModel = new LoginModel();
                 $loginModel->log_id = $id;
-                $loginModel->log_password = sha1($new_password);
+                $loginModel->log_password = $global->hashSenha($new_password);
                 if($loginDAO->updatePassword($loginModel)){
                     header("Location: /dashboard/administrator/my-password?success=1");
                     

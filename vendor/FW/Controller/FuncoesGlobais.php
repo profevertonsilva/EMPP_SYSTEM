@@ -15,6 +15,26 @@ class FuncoesGlobais{
         }
     }
 
+    // Hash para gravar em login.log_password (bcrypt, com salt por usuario)
+    function hashSenha($senha) {
+        return password_hash($senha, PASSWORD_DEFAULT);
+    }
+
+    // Confere a senha contra o hash gravado. Aceita tambem o SHA-1 legado (40 hex)
+    // para quem ainda nao entrou desde a migracao; use senhaPrecisaRehash() depois
+    // de um login valido para regravar no formato novo.
+    function verificarSenha($senha, $hash) {
+        $hash = (string) $hash;
+        if (preg_match('/^[a-f0-9]{40}$/i', $hash)) {
+            return hash_equals(strtolower($hash), sha1($senha));
+        }
+        return password_verify($senha, $hash);
+    }
+
+    function senhaPrecisaRehash($hash) {
+        return password_needs_rehash((string) $hash, PASSWORD_DEFAULT);
+    }
+
     function criptografar($senha) {
         // Criptografa a senha usando o algoritmo MD5
         return hash('md5', $senha);

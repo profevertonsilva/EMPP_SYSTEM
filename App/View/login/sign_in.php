@@ -11,6 +11,10 @@
           <h2>Welcome back</h2>
           <p class="auth-lead">Sign in to access your research studies.</p>
 
+          <?php if (isset($_GET['error'])) { ?>
+            <div class="alert alert-danger" role="alert">Invalid email or password.</div>
+          <?php } ?>
+
           <form id="formAuthentication" action="/signin" method="POST">
             <div class="mb-3">
               <label for="email" class="form-label">Email or username</label>
