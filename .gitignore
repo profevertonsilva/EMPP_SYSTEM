@@ -19,9 +19,6 @@ error_log
 !/resources/dashboard/assets/img/researcher/.gitkeep
 !/resources/dashboard/assets/img/administrator/.gitkeep
 
-# Template build output
-/Template/sneat-1.0.0/node_modules/
-
 # OS / editor
 Thumbs.db
 .DS_Store

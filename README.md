@@ -103,11 +103,9 @@ EMPP_SYSTEM/
 │           ├── researcher/              # Fotos de perfil de pesquisadores
 │           └── administrator/           # Fotos de perfil de administradores
 │
-├── Banco de Dados/
-│   ├── Complete_DB_Script.sql           # Script de criação (desatualizado — ver abaixo)
-│   └── *.brM3                           # Modelos lógico/conceitual (brModelo)
-│
-└── Template/sneat-1.0.0/     # Template original, só referência
+└── Banco de Dados/
+    ├── Complete_DB_Script.sql           # Script de criação (desatualizado — ver abaixo)
+    └── *.brM3                           # Modelos lógico/conceitual (brModelo)
 ```
 
 ---
