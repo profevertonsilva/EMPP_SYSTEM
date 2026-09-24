@@ -1,0 +1,29 @@
+# Environment and secrets
+.env
+.diag_token
+
+# Hosting artifacts
+.ftpquota
+error_log
+
+# Composer packages (restore with `php composer.phar install`).
+# vendor/FW is the project's own framework and is versioned.
+/vendor/*
+!/vendor/FW/
+
+# User uploads: SEM images and profile photos
+/resources/dashboard/assets/img/research/*
+/resources/dashboard/assets/img/researcher/*
+/resources/dashboard/assets/img/administrator/*
+!/resources/dashboard/assets/img/research/.gitkeep
+!/resources/dashboard/assets/img/researcher/.gitkeep
+!/resources/dashboard/assets/img/administrator/.gitkeep
+
+# Template build output
+/Template/sneat-1.0.0/node_modules/
+
+# OS / editor
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
