@@ -19,6 +19,11 @@ error_log
 !/resources/dashboard/assets/img/researcher/.gitkeep
 !/resources/dashboard/assets/img/administrator/.gitkeep
 
+# Design tooling scratch: review screenshots, decision-page logs, browser captures
+/.impeccable/review/
+/.impeccable/questions/
+/.playwright-mcp/
+
 # OS / editor
 Thumbs.db
 .DS_Store
