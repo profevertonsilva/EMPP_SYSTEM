@@ -22,6 +22,8 @@
   --empp-line-strong: #cdd2db;
   --empp-bg: #f3f4f6;
   --empp-surface: #ffffff;
+  /* Behind SEM micrographs: close to the microscope's own black */
+  --empp-stage: #0e1320;
 
   /* Status */
   --empp-success: #1f7a5a;
@@ -210,6 +212,27 @@ code, kbd, pre, samp {
   transform: none;
 }
 
+/* Secondary actions (Cancel, Choose another image): neutral, but legible */
+.btn-outline-secondary {
+  color: var(--empp-text);
+  border-color: var(--empp-line-strong);
+  background-color: var(--empp-surface);
+}
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus-visible {
+  color: var(--empp-ink);
+  border-color: var(--empp-muted);
+  background-color: var(--empp-bg);
+  box-shadow: none;
+  transform: none;
+}
+.btn-outline-secondary:active,
+.btn-outline-secondary.active {
+  color: var(--empp-ink) !important;
+  border-color: var(--empp-muted) !important;
+  background-color: var(--empp-line) !important;
+}
+
 .btn-label-primary {
   color: var(--empp-primary);
   background-color: var(--empp-primary-soft);
@@ -240,8 +263,10 @@ code, kbd, pre, samp {
   border-radius: var(--empp-radius-sm);
   color: var(--empp-ink);
 }
+/* Example values: readable (4.5:1 on white) yet lighter than typed text */
 .form-control::placeholder {
-  color: #9aa1af;
+  color: var(--empp-muted);
+  opacity: 1;
 }
 .form-control:focus,
 .form-select:focus,
@@ -268,6 +293,45 @@ code, kbd, pre, samp {
 }
 .input-group:has(.form-control.is-invalid) .input-group-text {
   border-color: var(--empp-danger) !important;
+}
+
+/* A titled group of fields inside a form card */
+.empp-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.empp-fieldset + .empp-fieldset {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--empp-line);
+}
+/* Floated, the legend sits in normal flow instead of on the fieldset border
+   (Bootstrap's reboot clears the element after it) */
+.empp-fieldset > legend {
+  float: left;
+  width: 100%;
+  margin: 0 0 1rem;
+  padding: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--empp-ink);
+}
+/* A gutter row already opens with its own top gap */
+.empp-fieldset > legend:has(+ .row) {
+  margin-bottom: 0;
+}
+.empp-fieldset > legend + .row {
+  margin-top: 0;
+}
+.empp-fieldset > legend small {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--empp-muted);
 }
 
 .form-check-input:focus {
@@ -514,7 +578,8 @@ code, kbd, pre, samp {
 
 .empp-steps {
   display: flex;
-  gap: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -525,6 +590,8 @@ code, kbd, pre, samp {
   gap: 0.5rem;
   font-size: 0.875rem;
   color: var(--empp-muted);
+  /* A step wraps as a whole, never mid-label */
+  white-space: nowrap;
 }
 .empp-steps li span {
   width: 1.75rem;

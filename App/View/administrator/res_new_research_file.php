@@ -6,7 +6,7 @@
         min-height: 280px;
         max-height: 420px;
         overflow: hidden;
-        background: #0e1320;
+        background: var(--empp-stage);
         border-radius: var(--empp-radius);
     }
     #new-photo-preview {
@@ -79,10 +79,7 @@
                             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <div>
-                                            <span class="empp-eyebrow">Step 1 of 2</span>
-                                            <h5 class="modal-title">Crop the image</h5>
-                                        </div>
+                                        <h5 class="modal-title">Crop the SEM image</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body p-3 p-md-4">

@@ -388,6 +388,12 @@ class AdministratorController extends Action{
     
     public function researchInfo(){
         $this->requireLogin();
+        // Step 2 needs the image from step 1; without it (direct link, study already
+        // created from it) start the flow over instead of showing a broken image
+        if (!preg_match('/^[a-f0-9]{32}\.jpg$/', $_SESSION['ree_file'] ?? '')) {
+            header("Location: /dashboard/researcher/research/new");
+            exit;
+        }
         $title = "EMPP";
         $this->getView()->title = $title;
         $title_page = "EMPP - Electrospun Membrane Property Predictor";
