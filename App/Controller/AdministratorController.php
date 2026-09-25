@@ -570,6 +570,14 @@ class AdministratorController extends Action{
         $fk_research_ree_id = (int) $_POST['fk_research_ree_id'];
         $this->requireResearchAccess((new ResearchDAO())->searchById($fk_research_ree_id));
 
+        // When the study has a predicted porosity, that is the simulation's porosity:
+        // the form shows it locked, and a posted value is never trusted over it
+        $results = (new Research_ResultsDAO())->searchById($fk_research_ree_id);
+        $predicted = $results ? $results->__get('rre_porosity') : null;
+        if ($predicted !== null && $predicted !== '') {
+            $fis_porosity = (string) round((float) $predicted / 100, 4);
+        }
+
         // Numbers only, with a point as decimal separator ("0,7" is rejected, not
         // converted), and within the ranges the model can compute
         foreach (['fis_thickness', 'fis_diameter', 'fis_porosity', 'fis_temperature', 'fis_pressure', 'fis_velocity',
