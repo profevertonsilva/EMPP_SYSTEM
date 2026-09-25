@@ -245,6 +245,73 @@ $empp_image_url = $_ENV['BASE_IMG'] . 'research/' . rawurlencode(basename((strin
     0%   { box-shadow: 0 0 0 0 rgba(var(--empp-primary-rgb), 0.35); }
     100% { box-shadow: 0 0 0 14px rgba(var(--empp-primary-rgb), 0); }
   }
+
+  /* Analysis run dialog: elapsed time counts up (the API gives no duration to count down from) */
+  .run-clock {
+    margin: 0.25rem 0 1.25rem;
+    font-family: var(--empp-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 2.75rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--empp-ink);
+  }
+  .run-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+    border-top: 1px solid var(--empp-line);
+  }
+  .run-steps li {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0.25rem;
+    border-bottom: 1px solid var(--empp-line);
+    color: var(--empp-muted);
+    font-size: 0.9375rem;
+  }
+  .run-steps li.is-running,
+  .run-steps li.is-done {
+    color: var(--empp-ink);
+  }
+  .run-steps .run-icon {
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid var(--empp-line-strong);
+    border-radius: 50%;
+  }
+  .run-steps li.is-running .run-icon {
+    border-color: var(--empp-primary);
+    border-right-color: transparent;
+    animation: run-spin 0.8s linear infinite;
+  }
+  .run-steps li.is-done .run-icon {
+    border-color: var(--empp-primary);
+    background: var(--empp-primary);
+    color: #fff;
+  }
+  .run-steps .run-time {
+    font-family: var(--empp-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.875rem;
+  }
+  .run-note {
+    margin: 1rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--empp-muted);
+  }
+  @keyframes run-spin {
+    to { transform: rotate(360deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .run-steps li.is-running .run-icon { animation: none; border-right-color: var(--empp-primary); }
+  }
 </style>
 
 <!-- Content wrapper -->
@@ -725,6 +792,91 @@ function showNotification(type, message) {
     const status2 = document.getElementById('step2-status');
     const originalLabel = button.innerHTML;
 
+    /*
+     * Blocking dialog with a stopwatch while the two API calls run. Neither
+     * call's duration is known in advance, so time counts up: in total and
+     * per step. The dialog cannot be dismissed; the error alert replaces it.
+     */
+    const runDialog = {
+        started: 0,
+        stepStarted: [0, 0],
+        stepEnded: [0, 0],
+        timer: null,
+
+        format: function (ms) {
+            const s = Math.floor(ms / 1000);
+            return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+        },
+
+        open: function () {
+            this.started = Date.now();
+            Swal.fire({
+                title: 'Analysing the image',
+                html:
+                    '<div class="run-clock" id="run-total" role="timer" aria-label="Elapsed time">00:00</div>' +
+                    '<ol class="run-steps" aria-live="polite">' +
+                        '<li id="run-step-1"><span class="run-icon" aria-hidden="true"></span><span>Extracting texture features</span><span class="run-time">—</span></li>' +
+                        '<li id="run-step-2"><span class="run-icon" aria-hidden="true"></span><span>Predicting porosity</span><span class="run-time">—</span></li>' +
+                    '</ol>' +
+                    '<p class="run-note">Large images can take a minute or more. Keep this page open.</p>',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            });
+            const self = this;
+            this.timer = setInterval(function () { self.tick(); }, 250);
+        },
+
+        row: function (step) {
+            const c = Swal.getHtmlContainer();
+            return c ? c.querySelector('#run-step-' + step) : null;
+        },
+
+        step: function (step) {
+            const now = Date.now();
+            if (step === 2) this.done(1);
+            this.stepStarted[step - 1] = now;
+            const row = this.row(step);
+            if (row) row.className = 'is-running';
+            this.tick();
+        },
+
+        done: function (step) {
+            if (!this.stepEnded[step - 1]) this.stepEnded[step - 1] = Date.now();
+            const row = this.row(step);
+            if (row) {
+                row.className = 'is-done';
+                row.querySelector('.run-icon').innerHTML = '<i class="bx bx-check"></i>';
+            }
+            this.tick();
+        },
+
+        tick: function () {
+            const c = Swal.getHtmlContainer();
+            if (!c) return;
+            const now = Date.now();
+            const total = c.querySelector('#run-total');
+            if (total) total.textContent = this.format(now - this.started);
+            for (let i = 0; i < 2; i++) {
+                if (!this.stepStarted[i]) continue;
+                const row = c.querySelector('#run-step-' + (i + 1));
+                if (row) row.querySelector('.run-time').textContent = this.format((this.stepEnded[i] || now) - this.stepStarted[i]);
+            }
+        },
+
+        finish: function () {
+            this.done(2);
+            clearInterval(this.timer);
+            Swal.update({ title: 'Analysis complete' });
+            const note = Swal.getHtmlContainer() && Swal.getHtmlContainer().querySelector('.run-note');
+            if (note) note.textContent = 'Loading the results…';
+        },
+
+        stop: function () {
+            clearInterval(this.timer);
+        }
+    };
+
     function setProgress(step, text) {
         button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>' + step + '/2 ' + text;
         progress.textContent = step === 1
@@ -732,6 +884,7 @@ function showNotification(type, message) {
             : 'Texture features saved. Running the porosity model.';
         status1.textContent = step === 1 ? 'Running…' : 'Done';
         status2.textContent = step === 2 ? 'Running…' : 'Pending';
+        runDialog.step(step);
     }
 
     // The save endpoints answer with a redirect; don't follow it, just check it wasn't an error
@@ -752,6 +905,7 @@ function showNotification(type, message) {
     async function run() {
         button.disabled = true;
         let featuresSaved = false;
+        runDialog.open();
         try {
             // 1. Haralick features
             setProgress(1, 'Extracting texture features…');
@@ -801,8 +955,10 @@ function showNotification(type, message) {
 
             status2.textContent = 'Done';
             progress.textContent = 'Done. Loading the results…';
+            runDialog.finish();
             window.location.href = viewUrl;
         } catch (err) {
+            runDialog.stop();
             console.error('Analysis failed:', err);
             if (featuresSaved) {
                 // Step 1 is stored: reload so the page shows the features and a retry for step 2 only
