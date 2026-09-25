@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-24T00:00:00Z",
+  "title": "Design System: EMPP",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Logo Blue", "canonical": "#34498c", "tonalRamp": ["#111a33", "#1a2547", "#233264", "#34498c", "#5467a8", "#8494c6", "#bcc5e2", "#eceff7"] },
+      "primary-hover": { "role": "primary", "displayName": "Pressed Blue", "canonical": "#2a3c75" },
+      "primary-active": { "role": "primary", "displayName": "Held Blue", "canonical": "#233264" },
+      "primary-soft": { "role": "primary", "displayName": "Blue Wash", "canonical": "#eceff7" },
+      "primary-deep": { "role": "primary", "displayName": "Deep Field Blue", "canonical": "#1a2547" },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#19202e", "tonalRamp": ["#0e1320", "#19202e", "#3c4557", "#5b6376", "#6a7284", "#cdd2db", "#e1e4ea", "#f3f4f6"] },
+      "text": { "role": "neutral", "displayName": "Slate Text", "canonical": "#3c4557" },
+      "muted": { "role": "neutral", "displayName": "Muted Slate", "canonical": "#6a7284" },
+      "muted-ground": { "role": "neutral", "displayName": "Muted Slate, Ground", "canonical": "#5b6376" },
+      "line": { "role": "neutral", "displayName": "Hairline", "canonical": "#e1e4ea" },
+      "line-strong": { "role": "neutral", "displayName": "Strong Hairline", "canonical": "#cdd2db" },
+      "bg": { "role": "neutral", "displayName": "Page Ground", "canonical": "#f3f4f6" },
+      "surface": { "role": "neutral", "displayName": "Sheet White", "canonical": "#ffffff" },
+      "stage": { "role": "neutral", "displayName": "Stage Black", "canonical": "#0e1320" },
+      "field-ink": { "role": "neutral", "displayName": "Field Ink", "canonical": "#e6e9f4" },
+      "field-soft": { "role": "neutral", "displayName": "Field Soft", "canonical": "#aab4d6" },
+      "success": { "role": "status", "displayName": "Success", "canonical": "#1f7a5a", "tonalRamp": ["#0f3d2d", "#175c44", "#1f7a5a", "#3f9878", "#72b89e", "#a9d6c4", "#d2ebe1", "#e9f5ef"] },
+      "warning": { "role": "status", "displayName": "Warning", "canonical": "#a86400", "tonalRamp": ["#4a2c00", "#784700", "#a86400", "#c7822a", "#dba45f", "#ecc795", "#f7e2c4", "#fdf3e2"] },
+      "danger": { "role": "status", "displayName": "Danger", "canonical": "#b3261e", "tonalRamp": ["#4f110d", "#801b15", "#b3261e", "#cc4f47", "#de827c", "#ecb2ae", "#f6d7d5", "#fcecea"] },
+      "chart-blue": { "role": "tertiary", "displayName": "Series Blue", "canonical": "#2a78d6" },
+      "chart-orange": { "role": "tertiary", "displayName": "Series Orange", "canonical": "#eb6834" },
+      "chart-green": { "role": "tertiary", "displayName": "Series Green", "canonical": "#1baf7a" },
+      "chart-amber": { "role": "tertiary", "displayName": "Series Amber", "canonical": "#eda100" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Public site hero headline only, on the deep field." },
+      "headline": { "displayName": "Headline", "purpose": "Site section heads and the auth panel headline." },
+      "title": { "displayName": "Title", "purpose": "Block and fieldset headings inside cards and the study record." },
+      "body": { "displayName": "Body (app)", "purpose": "App copy, inherited from Sneat." },
+      "body-site": { "displayName": "Body (site)", "purpose": "Public site copy." },
+      "caption": { "displayName": "Caption", "purpose": "Figure captions, hints, footers." },
+      "label": { "displayName": "Mono Label", "purpose": "Uppercase mono label for table column heads, menu section headers, pipeline status and the label above a value." },
+      "readout": { "displayName": "Readout", "purpose": "Large measured or predicted value with a half-size muted unit." },
+      "numeric": { "displayName": "Numeric", "purpose": "Any number that aligns in columns." }
+    },
+    "shadows": [
+      { "name": "hairline-ambient", "value": "0 1px 2px rgba(25, 32, 46, 0.06)", "purpose": "Cards and the detached navbar." },
+      { "name": "floating-menu", "value": "0 8px 24px rgba(25, 32, 46, 0.1)", "purpose": "Dropdown menus." },
+      { "name": "rising-sheet", "value": "0 1px 2px rgba(25, 32, 46, 0.06), 0 24px 48px -24px rgba(26, 37, 71, 0.35)", "purpose": "The public site's study record over the deep field only." },
+      { "name": "focus-halo", "value": "0 0 0 3px rgba(52, 73, 140, 0.12)", "purpose": "Focused inputs and input groups." },
+      { "name": "focus-outline", "value": "outline: 2px solid rgba(52, 73, 140, 0.45); outline-offset: 2px", "purpose": "Keyboard focus on buttons and row links (solid Logo Blue on the site, white on the deep field)." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Site transitions and the one-time study-run sequence." },
+      { "name": "state-fast", "value": "0.15s", "purpose": "App hover and state colour transitions." },
+      { "name": "state-site", "value": "0.2s", "purpose": "Site button colour transitions." },
+      { "name": "study-run", "value": "scan 1.3s, block wash 1.1s staggered 0.2s / 1.2s / 2s, bar fill 1.2s, curve draw 1.6s, marker appear 0.5s at 1.6s", "purpose": "The record fills in once on reveal; only under prefers-reduced-motion: no-preference." }
+    ],
+    "breakpoints": [
+      { "name": "site-xs", "value": "520px" },
+      { "name": "site-sm", "value": "720px" },
+      { "name": "site-md", "value": "860px" },
+      { "name": "site-lg", "value": "1080px" },
+      { "name": "app-lg", "value": "991.98px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action in the app; Logo Blue fill, flat, 4px radius.",
+      "html": "<button class=\"ds-btn-primary\">Run simulation</button>",
+      "css": ".ds-btn-primary { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-weight: 500; font-size: 0.9375rem; padding: 0.4375rem 1.25rem; color: #fff; background: #34498c; border: 1px solid #34498c; border-radius: 4px; cursor: pointer; transition: background-color 0.15s, border-color 0.15s; } .ds-btn-primary:hover { background: #2a3c75; border-color: #2a3c75; } .ds-btn-primary:active { background: #233264; border-color: #233264; } .ds-btn-primary:focus-visible { outline: 2px solid rgba(52, 73, 140, 0.45); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Neutral but legible secondary action (Cancel, Choose another image).",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-weight: 500; font-size: 0.9375rem; padding: 0.4375rem 1.25rem; color: #3c4557; background: #fff; border: 1px solid #cdd2db; border-radius: 4px; cursor: pointer; transition: background-color 0.15s, border-color 0.15s, color 0.15s; } .ds-btn-secondary:hover, .ds-btn-secondary:focus-visible { color: #19202e; background: #f3f4f6; border-color: #6a7284; } .ds-btn-secondary:active { background: #e1e4ea; } .ds-btn-secondary:focus-visible { outline: 2px solid rgba(52, 73, 140, 0.45); outline-offset: 2px; }"
+    },
+    {
+      "name": "Field Buttons (site)",
+      "kind": "button",
+      "refersTo": "button-field-light",
+      "description": "Lead and ghost actions on the deep logo-blue field.",
+      "html": "<div class=\"ds-field\"><a class=\"ds-btn-light\" href=\"#\">Create free account</a><a class=\"ds-btn-ghost\" href=\"#\">Sign in</a></div>",
+      "css": ".ds-field { display: flex; gap: 0.75rem; padding: 1.5rem; background: #1a2547; } .ds-btn-light, .ds-btn-ghost { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0.625rem 1.25rem; border: 1px solid transparent; border-radius: 4px; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-weight: 600; font-size: 0.9375rem; text-decoration: none; transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-light { background: #fff; color: #1a2547; } .ds-btn-light:hover { background: #eceff7; } .ds-btn-ghost { color: #fff; border-color: rgba(255, 255, 255, 0.45); } .ds-btn-ghost:hover { border-color: #fff; background: rgba(255, 255, 255, 0.08); } .ds-btn-light:focus-visible, .ds-btn-ghost:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Form field with sentence-case label, blue focus border and halo.",
+      "html": "<label class=\"ds-field-wrap\"><span class=\"ds-label\">Flow rate (mL/min)</span><input class=\"ds-input\" placeholder=\"0.50\"></label>",
+      "css": ".ds-field-wrap { display: grid; gap: 0.375rem; font-family: 'IBM Plex Sans', system-ui, sans-serif; } .ds-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.02em; color: #3c4557; } .ds-input { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; padding: 0.4375rem 0.875rem; color: #19202e; background: #fff; border: 1px solid #cdd2db; border-radius: 4px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; } .ds-input::placeholder { color: #6a7284; opacity: 1; } .ds-input:focus { border-color: #34498c; box-shadow: 0 0 0 3px rgba(52, 73, 140, 0.12); }"
+    },
+    {
+      "name": "Side Menu",
+      "kind": "nav",
+      "refersTo": "menu-item-active",
+      "description": "App side menu with mono section header and Blue Wash active item.",
+      "html": "<nav class=\"ds-menu\"><div class=\"ds-menu-head\">Research</div><a class=\"ds-menu-link is-active\" href=\"#\">My research studies</a><a class=\"ds-menu-link\" href=\"#\">New study</a></nav>",
+      "css": ".ds-menu { width: 240px; padding: 0.5rem 0; background: #fff; border-right: 1px solid #e1e4ea; font-family: 'IBM Plex Sans', system-ui, sans-serif; } .ds-menu-head { margin: 0.25rem 1.5rem 0.375rem; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #6a7284; } .ds-menu-link { position: relative; display: block; margin: 1px 0.75rem; padding: 0.55rem 0.75rem; border-radius: 4px; color: #3c4557; font-weight: 500; font-size: 0.9375rem; text-decoration: none; } .ds-menu-link:hover { background: #f3f4f6; color: #19202e; } .ds-menu-link.is-active { background: #eceff7; color: #34498c; font-weight: 600; } .ds-menu-link.is-active::before { content: ''; position: absolute; left: -0.75rem; top: 0; bottom: 0; width: 3px; border-radius: 0 3px 3px 0; background: #34498c; } .ds-menu-link:focus-visible { outline: 2px solid rgba(52, 73, 140, 0.45); outline-offset: 2px; }"
+    },
+    {
+      "name": "Step Markers",
+      "kind": "custom",
+      "refersTo": "step-marker",
+      "description": "Numbered circles for the image-to-performance path: done, current, pending.",
+      "html": "<ol class=\"ds-steps\"><li class=\"is-done\"><span>01</span>Image</li><li class=\"is-current\"><span>02</span>Features</li><li><span>03</span>Porosity</li><li><span>04</span>Filtration</li></ol>",
+      "css": ".ds-steps { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin: 0; padding: 0; list-style: none; font-family: 'IBM Plex Sans', system-ui, sans-serif; } .ds-steps li { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6a7284; white-space: nowrap; } .ds-steps span { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; border: 2px solid #cdd2db; background: #fff; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 0.6875rem; } .ds-steps li.is-current { color: #19202e; font-weight: 600; } .ds-steps li.is-current span { border-color: #34498c; color: #34498c; } .ds-steps li.is-done span { border-color: #34498c; background: #34498c; color: #fff; }"
+    },
+    {
+      "name": "Readout Grid",
+      "kind": "card",
+      "refersTo": "readout-value",
+      "description": "Hairline-divided cells, each a mono label over a mono readout with a muted unit.",
+      "html": "<div class=\"ds-readouts\"><div><span class=\"ds-lbl\">Porosity</span><div class=\"ds-val\">78.42<span>%</span></div></div><div><span class=\"ds-lbl\">Pressure drop</span><div class=\"ds-val\">142.6<span>Pa</span></div></div><div><span class=\"ds-lbl\">Quality factor</span><div class=\"ds-val\">0.031<span>1/Pa</span></div></div></div>",
+      "css": ".ds-readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; background: #e1e4ea; border: 1px solid #e1e4ea; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 2px rgba(25, 32, 46, 0.06); } .ds-readouts > div { padding: 1rem 1.125rem; background: #fff; } .ds-lbl { display: block; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #6a7284; } .ds-val { margin-top: 0.25rem; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-size: 1.625rem; font-weight: 500; line-height: 1.1; letter-spacing: -0.02em; color: #19202e; } .ds-val span { margin-left: 0.3em; font-size: 0.5em; font-weight: 400; color: #6a7284; letter-spacing: 0; }"
+    },
+    {
+      "name": "Micrograph Stage",
+      "kind": "custom",
+      "refersTo": "micrograph-stage",
+      "description": "SEM image frame on stage black with a mono scale strip.",
+      "html": "<figure class=\"ds-stage\"><div class=\"ds-stage-img\"></div><div class=\"ds-stage-bar\"><span></span>10 µm</div></figure>",
+      "css": ".ds-stage { position: relative; margin: 0; width: 320px; aspect-ratio: 4 / 3; border-radius: 4px; background: #0e1320; overflow: hidden; } .ds-stage-img { position: absolute; inset: 0 0 1.75rem 0; background: repeating-linear-gradient(35deg, rgba(200, 208, 230, 0.25) 0 2px, transparent 2px 14px), repeating-linear-gradient(-50deg, rgba(200, 208, 230, 0.18) 0 3px, transparent 3px 19px); } .ds-stage-bar { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 0.5rem; height: 1.75rem; padding: 0 0.75rem; background: #0e1320; color: #d5dbeb; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 0.6875rem; } .ds-stage-bar span { width: 16%; height: 3px; background: #fff; }"
+    },
+    {
+      "name": "Dropzone",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Dashed upload target on the page ground; turns blue on hover or drag-over.",
+      "html": "<label class=\"ds-drop\"><strong>Drop your SEM image here</strong>JPG, PNG or WEBP, up to 5 MB</label>",
+      "css": ".ds-drop { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; min-height: 200px; padding: 2rem; text-align: center; border: 2px dashed #cdd2db; border-radius: 6px; background: #f3f4f6; color: #5b6376; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.875rem; cursor: pointer; transition: border-color 0.15s, background-color 0.15s; } .ds-drop strong { color: #19202e; font-weight: 600; font-size: 0.9375rem; } .ds-drop:hover { border-color: #34498c; background: #eceff7; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Instrument Record",
+    "overview": "EMPP looks like the output of a measuring instrument, not a marketing product. A SEM micrograph sits on the microscope's own black; the values it yields sit on a white sheet divided by hairlines, set in a monospaced face with tabular figures and a quieter unit after each number. One accent, the blue sampled from the EMPP logo, marks what is active, done, or actionable. The brand's only atmospheric moment is the deep logo-blue field with the nanofibre texture, which frames entry points (the sign-in panel, the public site's header and close) and never the working content.\n\nThe tool (dashboard, study pages, forms) and the public site are one world. The app layer re-skins the Sneat/Bootstrap template: pills flattened to 4px, hover lifts and coloured button shadows removed, table heads and menu section headers set as mono labels. The public site extends the same tokens and adds a surface-specific set: the deep field header, a lifted study-record sheet, and a single fill-in animation that plays the study once. Density is moderate and tabular; content is grouped by rules and numbered steps rather than by boxes and icons.",
+    "keyCharacteristics": [
+      "Logo blue as the single accent; cool blue-grey neutrals; status colours only for status.",
+      "IBM Plex Sans for words, IBM Plex Mono with tabular figures for every measured or predicted value.",
+      "Hairline structure (1px) over shadow; surfaces rest flat.",
+      "Micrographs always on stage black with a mono data strip.",
+      "Numbered circular step markers carry the image-to-performance path everywhere.",
+      "Motion runs once, on reveal, and respects reduced motion."
+    ],
+    "rules": [
+      { "name": "The One Blue Rule", "body": "Logo Blue is the only accent. Status colours mean status, series colours live inside charts; nothing else gets a hue.", "section": "colors" },
+      { "name": "The Stage Black Rule", "body": "A micrograph is never shown on white or the page ground. It sits on Stage Black, clipped to the small radius, with its scale or caption in a mono strip along the bottom.", "section": "colors" },
+      { "name": "The Legible Ground Rule", "body": "Small secondary text needs 4.5:1 on the ground it actually sits on. On white, Muted Slate passes; on the grey page ground, use Muted Slate, Ground.", "section": "colors" },
+      { "name": "The Measured Value Rule", "body": "Every measured, predicted or computed number is Plex Mono with tabular figures, its unit set smaller and muted after it. A number in the sans face is a label, not a measurement.", "section": "typography" },
+      { "name": "The Resting Flat Rule", "body": "Buttons and cards never lift, translate or glow on hover; state is a colour change. The theme layer explicitly strips Sneat's hover transforms and coloured button shadows.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do set every measured or predicted value in Plex Mono with tabular figures and a smaller muted unit.",
+      "Do keep Logo Blue as the only accent; use Blue Wash for selected and active grounds.",
+      "Do divide content with 1px hairlines and keep surfaces flat at rest.",
+      "Do show micrographs on Stage Black with a mono strip.",
+      "Do use numbered circular markers for the image-to-performance steps.",
+      "Do run motion once on reveal, and only under prefers-reduced-motion: no-preference.",
+      "Do check small secondary text against the ground it sits on: Muted Slate on white, Muted Slate, Ground on the page ground."
+    ],
+    "donts": [
+      "Don't set a measured value in the sans face or with proportional figures.",
+      "Don't use pill-shaped buttons; controls take the 4px radius.",
+      "Don't lift, translate or glow buttons and cards on hover.",
+      "Don't introduce a second accent hue; status and chart-series colours stay in their roles.",
+      "Don't use the deep fibre field behind working content; it frames entry points only.",
+      "Don't loop an animation on a value; a result is revealed once and then holds still."
+    ]
+  }
+}
