@@ -1,6 +1,6 @@
 <!-- Brand panel: what EMPP does, over a nanofiber texture -->
 <aside class="auth-panel">
-  <img class="auth-panel-logo" src="<?= $_ENV['BASE_URL']; ?>resources/img/logo_empp_w.png" alt="EMPP" />
+  <a href="/" aria-label="EMPP home"><img class="auth-panel-logo" src="<?= $_ENV['BASE_URL']; ?>resources/img/logo_empp_w.png" alt="EMPP" /></a>
 
   <div>
     <span class="empp-eyebrow">Electrospun Membrane Property Predictor</span>

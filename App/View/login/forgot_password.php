@@ -5,7 +5,7 @@
 
       <main class="auth-main">
         <div class="auth-form">
-          <img class="auth-form-logo" src="<?= $_ENV['BASE_URL']; ?>resources/img/logo_empp_b.png" alt="EMPP" title="<?= $_ENV['SITE_TITLE_HOME']; ?>" />
+          <a href="/" aria-label="EMPP home"><img class="auth-form-logo" src="<?= $_ENV['BASE_URL']; ?>resources/img/logo_empp_b.png" alt="EMPP" title="<?= $_ENV['SITE_TITLE_HOME']; ?>" /></a>
 
           <span class="empp-eyebrow">Password reset</span>
           <h2>Forgot your password?</h2>

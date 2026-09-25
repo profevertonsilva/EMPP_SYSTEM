@@ -18,6 +18,14 @@ class Route extends Boostrap
             'action' => 'error404'
         );
 
+        // Public site. Declared before the database routes so / opens the site,
+        // not the login, whatever the routes table maps it to.
+        $routes['Site_home'] = array(
+            'route' => '/',
+            'controller' => 'SiteController',
+            'action' => 'index'
+        );
+
         // Administrator oversight routes, kept in code so they ship with the
         // controller instead of depending on rows in the `routes` table.
         $routes['Administrator_researcher_view'] = array(

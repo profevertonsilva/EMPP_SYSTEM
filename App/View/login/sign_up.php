@@ -9,7 +9,7 @@ include __DIR__ . '/../includes/auth/head.php';
 
       <main class="auth-main">
         <div class="auth-form auth-form-wide">
-          <img class="auth-form-logo" src="<?= $_ENV['BASE_URL']; ?>resources/img/logo_empp_b.png" alt="EMPP" title="<?= $_ENV['SITE_TITLE_HOME']; ?>" />
+          <a href="/" aria-label="EMPP home"><img class="auth-form-logo" src="<?= $_ENV['BASE_URL']; ?>resources/img/logo_empp_b.png" alt="EMPP" title="<?= $_ENV['SITE_TITLE_HOME']; ?>" /></a>
 
           <span class="empp-eyebrow">Researcher account</span>
           <h2>Create your account</h2>
