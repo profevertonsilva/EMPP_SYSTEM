@@ -20,6 +20,7 @@ use App\DAO\Filter_SimulationDAO;
 use App\Model\Filter_SimulationModel;
 use App\Model\SimulationModel;
 use App\DAO\SimulationDAO;
+use App\DAO\SiteContentDAO;
 
 class AdministratorController extends Action{
 
@@ -877,6 +878,166 @@ class AdministratorController extends Action{
         $zip->outputAsAttachment('empp-dataset-' . date('Ymd') . $suffix . '.zip');
         $zip->close();
         exit;
+    }
+
+    /* System settings: the research content shown on the public page /research */
+
+    public function adminSettings(){
+        $this->requireAdmin();
+
+        $this->getView()->title = "System settings";
+        $this->getView()->title_page = "EMPP - Electrospun Membrane Property Predictor";
+        $this->getView()->active_page = "settings";
+        $this->logged();
+
+        $dao = new SiteContentDAO();
+        $tab = $_GET['tab'] ?? 'institutions';
+        if (!SiteContentDAO::section($tab) && $tab !== 'texts') {
+            $tab = 'institutions';
+        }
+        $this->getView()->tab = $tab;
+        $this->getView()->content = $dao->publicContent();
+        // ?edit=<id> opens that item of the current tab in the form
+        $this->getView()->editing = (isset($_GET['edit']) && $tab !== 'texts') ? $dao->find($tab, (int) $_GET['edit']) : null;
+        $this->getView()->csrf = $this->settingsToken();
+
+        $this->render('settings', 'dashboard');
+    }
+
+    public function adminSettingsSave(){
+        $this->requireAdmin();
+        $tab = $_POST['tab'] ?? '';
+        $back = '/dashboard/administrator/settings?tab=' . rawurlencode($tab);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !hash_equals($this->settingsToken(), (string) ($_POST['csrf'] ?? ''))) {
+            header("Location: $back&status=expired");
+            exit;
+        }
+
+        $dao = new SiteContentDAO();
+
+        if ($tab === 'texts') {
+            foreach (array_keys(SiteContentDAO::TEXTS) as $key) {
+                $dao->saveText($key, trim((string) ($_POST[$key] ?? '')));
+            }
+            header("Location: $back&status=saved");
+            exit;
+        }
+
+        $section = SiteContentDAO::section($tab);
+        if (!$section) {
+            header('Location: /dashboard/administrator/settings');
+            exit;
+        }
+        $op = $_POST['op'] ?? 'save';
+        $id = isset($_POST['id']) && $_POST['id'] !== '' ? (int) $_POST['id'] : null;
+
+        if ($op === 'delete' && $id) {
+            $item = $dao->find($tab, $id);
+            foreach (array_keys($section['images'] ?? []) as $col) {
+                $this->deleteSiteLogo($item[$col] ?? null);
+            }
+            $dao->delete($tab, $id);
+            header("Location: $back&status=deleted");
+            exit;
+        }
+        if (($op === 'up' || $op === 'down') && $id) {
+            $dao->move($tab, $id, $op === 'up' ? -1 : 1);
+            header("Location: $back");
+            exit;
+        }
+
+        // Save: every value comes from the section's own field list
+        $data = [];
+        $retry = $back . ($id ? "&edit=$id" : '');
+        foreach ($section['fields'] as $col => $f) {
+            $value = trim((string) ($_POST[$col] ?? ''));
+            if (!empty($f['required']) && $value === '') {
+                header("Location: $retry&status=required");
+                exit;
+            }
+            if ($f['type'] === 'select' && !isset($f['options'][$value])) {
+                header("Location: $retry&status=invalid");
+                exit;
+            }
+            if ($f['type'] === 'entity' && $value !== '' && !$dao->find('institutions', (int) $value)) {
+                header("Location: $retry&status=invalid");
+                exit;
+            }
+            if ($f['type'] === 'email' && $value !== '' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                header("Location: $retry&status=email");
+                exit;
+            }
+            if ($f['type'] === 'url' && $value !== '' && !preg_match('#^https?://#i', $value)) {
+                $value = 'https://' . $value;
+            }
+            if ($f['type'] === 'url' && $value !== '' && !filter_var($value, FILTER_VALIDATE_URL)) {
+                header("Location: $back" . ($id ? "&edit=$id" : '') . "&status=url");
+                exit;
+            }
+            if ($f['type'] === 'year' && $value !== '' && !preg_match('/^\d{4}$/', $value)) {
+                header("Location: $back" . ($id ? "&edit=$id" : '') . "&status=year");
+                exit;
+            }
+            if (isset($f['max'])) {
+                $value = mb_substr($value, 0, $f['max']);
+            }
+            $data[$col] = $value;
+        }
+
+        // Images (logo, photo): file input "img_<column>", checkbox "remove_<column>"
+        $existing = $id ? $dao->find($tab, $id) : null;
+        foreach (array_keys($section['images'] ?? []) as $col) {
+            $current = $existing[$col] ?? null;
+            if (!empty($_FILES['img_' . $col]['name'])) {
+                $stored = $this->storeSiteLogo($_FILES['img_' . $col]);
+                if ($stored === null) {
+                    header("Location: $retry&status=image");
+                    exit;
+                }
+                $this->deleteSiteLogo($current);
+                $data[$col] = $stored;
+            } elseif (!empty($_POST['remove_' . $col])) {
+                $this->deleteSiteLogo($current);
+                $data[$col] = '';
+            }
+        }
+
+        $dao->save($tab, $id, $data);
+        header("Location: $back&status=saved");
+        exit;
+    }
+
+    // Per-session token for the settings forms
+    private function settingsToken(){
+        if (empty($_SESSION['settings_csrf'])) {
+            $_SESSION['settings_csrf'] = bin2hex(random_bytes(16));
+        }
+        return $_SESSION['settings_csrf'];
+    }
+
+    // Saves an uploaded logo (PNG, JPG or WEBP, up to 2 MB, checked by content) and returns its file name
+    private function storeSiteLogo($file){
+        if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || $file['size'] > 2 * 1024 * 1024) {
+            return null;
+        }
+        $info = @getimagesize($file['tmp_name']);
+        $ext = [IMAGETYPE_PNG => 'png', IMAGETYPE_JPEG => 'jpg', IMAGETYPE_WEBP => 'webp'][$info[2] ?? 0] ?? null;
+        if (!$ext) {
+            return null;
+        }
+        $dir = 'resources/dashboard/assets/img/site/';
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        $name = bin2hex(random_bytes(16)) . '.' . $ext;
+        return move_uploaded_file($file['tmp_name'], $dir . $name) ? $name : null;
+    }
+
+    private function deleteSiteLogo($name){
+        if ($name && preg_match('/^[a-f0-9]{32}\.(png|jpg|webp)$/', $name)) {
+            @unlink('resources/dashboard/assets/img/site/' . $name);
+        }
     }
 
     // Absolute path of a research image on disk, or null when the file is missing

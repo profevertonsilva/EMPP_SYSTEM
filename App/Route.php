@@ -26,6 +26,45 @@ class Route extends Boostrap
             'action' => 'index'
         );
 
+        // Researcher email verification after sign-up (6-digit code)
+        $routes['Login_verify_email'] = array(
+            'route' => '/verify-email',
+            'controller' => 'LoginController',
+            'action' => 'verifyEmail'
+        );
+        $routes['Login_verify_email_action'] = array(
+            'route' => '/verify-email/confirm',
+            'controller' => 'LoginController',
+            'action' => 'actionVerifyEmail'
+        );
+        $routes['Login_verify_email_resend'] = array(
+            'route' => '/verify-email/resend',
+            'controller' => 'LoginController',
+            'action' => 'actionResendCode'
+        );
+
+        // Password reset with a 6-digit code (the /forgot-password form posts here)
+        $routes['Login_forgot_password_send'] = array(
+            'route' => '/forgot-password/send',
+            'controller' => 'LoginController',
+            'action' => 'actionForgotPassword'
+        );
+        $routes['Login_reset_password'] = array(
+            'route' => '/reset-password',
+            'controller' => 'LoginController',
+            'action' => 'resetPassword'
+        );
+        $routes['Login_reset_password_action'] = array(
+            'route' => '/reset-password/confirm',
+            'controller' => 'LoginController',
+            'action' => 'actionResetPassword'
+        );
+        $routes['Login_reset_password_resend'] = array(
+            'route' => '/reset-password/resend',
+            'controller' => 'LoginController',
+            'action' => 'actionResendResetCode'
+        );
+
         // Administrator oversight routes, kept in code so they ship with the
         // controller instead of depending on rows in the `routes` table.
         $routes['Administrator_researcher_view'] = array(
@@ -46,6 +85,23 @@ class Route extends Boostrap
             'route' => '/dashboard/account/update-profile',
             'controller' => 'AdministratorController',
             'action' => 'actionUpdateMyProfile'
+        );
+        // System settings: research content for the public page /research
+        $routes['Administrator_settings'] = array(
+            'route' => '/dashboard/administrator/settings',
+            'controller' => 'AdministratorController',
+            'action' => 'adminSettings'
+        );
+        $routes['Administrator_settings_save'] = array(
+            'route' => '/dashboard/administrator/settings/save',
+            'controller' => 'AdministratorController',
+            'action' => 'adminSettingsSave'
+        );
+        // Public page about the research
+        $routes['Site_research'] = array(
+            'route' => '/research',
+            'controller' => 'SiteController',
+            'action' => 'research'
         );
         $routes['Administrator_dataset_download'] = array(
             'route' => '/dashboard/administrator/dataset/download',

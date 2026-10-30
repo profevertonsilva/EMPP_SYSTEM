@@ -18,11 +18,17 @@ error_log
 !/resources/dashboard/assets/img/research/.gitkeep
 !/resources/dashboard/assets/img/researcher/.gitkeep
 !/resources/dashboard/assets/img/administrator/.gitkeep
+# Logos and photos uploaded in System settings
+/resources/dashboard/assets/img/site/*
+!/resources/dashboard/assets/img/site/.gitkeep
 
 # Design tooling scratch: review screenshots, decision-page logs, browser captures
 /.impeccable/review/
 /.impeccable/questions/
 /.playwright-mcp/
+
+# Deploy packages
+/deploy/
 
 # OS / editor
 Thumbs.db

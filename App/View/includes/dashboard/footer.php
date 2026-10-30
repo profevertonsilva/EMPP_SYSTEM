@@ -37,6 +37,8 @@
 
     <!-- Decimal inputs accept only a point as separator (input[data-decimal]) -->
     <script src="<?= $_ENV['BASE_JS']; ?>empp-decimal.js"></script>
+    <!-- Validation messages in English, whatever the browser's language -->
+    <script src="<?= $_ENV['BASE_JS']; ?>empp-validity.js"></script>
     <!-- Whole-row links in tables (tr[data-href]) -->
     <script src="<?= $_ENV['BASE_JS']; ?>empp-rows.js"></script>
 

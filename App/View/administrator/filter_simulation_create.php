@@ -34,9 +34,9 @@ $field = function ($name, $label, $unit = '', $opts = []) {
 
 // Setup sections: numbered like every other step path in EMPP
 $sections = [
-  1 => ['id' => 'sec-membrane', 'title' => 'Membrane', 'note' => 'The filter medium: what it is made of and how it is built.'],
-  2 => ['id' => 'sec-operating', 'title' => 'Operating conditions', 'note' => 'The air flowing through the membrane during the test.'],
-  3 => ['id' => 'sec-aerosol', 'title' => 'Aerosol', 'note' => 'The particles challenging the filter.'],
+  1 => ['id' => 'sec-filter', 'title' => 'Filter features', 'note' => 'The filter medium: what it is made of and how it is built.'],
+  2 => ['id' => 'sec-operation', 'title' => 'Filter operation', 'note' => 'The conditions of the filtration test.'],
+  3 => ['id' => 'sec-aerosol', 'title' => 'Aerosol properties', 'note' => 'The particles challenging the filter.'],
 ];
 ?>
 <style>
@@ -210,14 +210,20 @@ $sections = [
   }
 
   /* Run panel: completeness of the setup, then the action */
-  .sim-run {
-    top: 6rem;
+  /* Setup + converter follow the scroll only when both fit the window */
+  @media (min-width: 992px) and (min-height: 980px) {
+    .sim-aside {
+      position: sticky;
+      top: 6rem;
+    }
   }
-  .sim-run h5 {
+  .sim-run h5,
+  .sim-convert h5 {
     margin: 0 0 0.25rem;
     font-size: 0.9375rem;
   }
-  .sim-run > .card-body > p {
+  .sim-run > .card-body > p,
+  .sim-convert > .card-body > p {
     margin: 0 0 1.25rem;
     color: var(--empp-muted);
     font-size: 0.8125rem;
@@ -274,6 +280,64 @@ $sections = [
     color: var(--empp-primary);
     font-size: 1rem;
   }
+  /* Unit converter */
+  .sim-convert .conv-unit {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 45%;
+    background-color: var(--empp-bg);
+  }
+  .conv-swap {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--empp-primary);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .conv-swap:hover {
+    color: var(--empp-primary-hover);
+  }
+  .conv-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0.875rem;
+    background: var(--empp-bg);
+    border-radius: var(--empp-radius-sm);
+  }
+  .conv-result-value {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    line-height: 1.2;
+  }
+  #conv-out {
+    font-size: 1.375rem;
+    font-weight: 500;
+    color: var(--empp-ink);
+  }
+  .conv-result-unit {
+    margin-left: 0.3em;
+    font-family: var(--empp-mono);
+    font-size: 0.8125rem;
+    color: var(--empp-muted);
+  }
+  .conv-copy {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--empp-surface);
+  }
+  .conv-copy.is-copied {
+    color: var(--empp-success);
+    border-color: var(--empp-success);
+  }
+
   .sim-outputs-title {
     margin: 0 0 0.5rem;
     color: var(--empp-ink);
@@ -358,7 +422,7 @@ $sections = [
               <?php } ?>
             </section>
 
-            <!-- 1. Membrane -->
+            <!-- 1. Filter features -->
             <fieldset class="sim-section" id="<?= $sections[1]['id']; ?>" data-section="1">
               <legend>
                 <span class="sim-marker" aria-hidden="true">1</span>
@@ -369,7 +433,6 @@ $sections = [
                 <?php
                 $field('fis_material', 'Material', '', [
                   'text' => true,
-                  'col' => 'col-12',
                   'value' => $material,
                   'placeholder' => 'e.g. PAN',
                   'hint' => $material !== '' ? 'Prefilled from this study\'s description. Edit it if needed.' : '',
@@ -385,13 +448,11 @@ $sections = [
                 ]);
                 $field('fis_thickness', 'Thickness, L', 'mm');
                 $field('fis_diameter', 'Average fiber diameter, d<sub>f</sub>', '&micro;m');
-                $field('fis_density', 'Fiber density, &rho;<sub>f</sub>', 'kg/m&sup3;');
-                $field('fis_area', 'Filter area', 'm&sup2;');
                 ?>
               </div>
             </fieldset>
 
-            <!-- 2. Operating conditions -->
+            <!-- 2. Filter operation -->
             <fieldset class="sim-section" id="<?= $sections[2]['id']; ?>" data-section="2">
               <legend>
                 <span class="sim-marker" aria-hidden="true">2</span>
@@ -400,14 +461,15 @@ $sections = [
               </legend>
               <div class="row g-3">
                 <?php
-                $field('fis_temperature', 'Temperature, T', '&deg;C', ['col' => 'col-md-4', 'placeholder' => '25', 'signed' => true]);
-                $field('fis_pressure', 'Pressure, P', 'mmHg', ['col' => 'col-md-4', 'placeholder' => '760']);
-                $field('fis_velocity', 'Air face velocity, v<sub>s</sub>', 'm/s', ['col' => 'col-md-4']);
+                $field('fis_temperature', 'Test temperature, T', '&deg;C', ['placeholder' => '25', 'signed' => true]);
+                $field('fis_pressure', 'Test pressure, P', 'mmHg', ['placeholder' => '760']);
+                $field('fis_velocity', 'Air face velocity, v<sub>s</sub>', 'm/s');
+                $field('fis_area', 'Filter area', 'm&sup2;');
                 ?>
               </div>
             </fieldset>
 
-            <!-- 3. Aerosol -->
+            <!-- 3. Aerosol properties (size classes are fixed at 100: hidden fis_class) -->
             <fieldset class="sim-section" id="<?= $sections[3]['id']; ?>" data-section="3">
               <legend>
                 <span class="sim-marker" aria-hidden="true">3</span>
@@ -416,14 +478,11 @@ $sections = [
               </legend>
               <div class="row g-3">
                 <?php
-                $field('fis_size_min', 'Minimum particle size, d<sub>pi,min</sub>', '&micro;m', ['col' => 'col-md-4', 'hint' => 'Smallest size in the distribution.']);
-                $field('fis_size_max', 'Maximum particle size, d<sub>pi,max</sub>', '&micro;m', ['col' => 'col-md-4', 'hint' => 'Largest size in the distribution.']);
-                $field('fis_concentration', 'Inlet dust concentration, C', 'mg/m&sup3;', ['col' => 'col-md-4']);
+                $field('fis_density', 'Particle density, &rho;<sub>p</sub>', 'kg/m&sup3;');
+                $field('fis_size_min', 'Minimum particle size, d<sub>pi,min</sub>', '&micro;m', ['hint' => 'Smallest size in the distribution.']);
+                $field('fis_size_max', 'Maximum particle size, d<sub>pi,max</sub>', '&micro;m', ['hint' => 'Largest size in the distribution.']);
+                $field('fis_concentration', 'Inlet dust concentration, C', 'mg/m&sup3;');
                 ?>
-                <div class="col-md-4">
-                  <label class="form-label" for="fis_class1">Size classes</label>
-                  <input type="text" class="form-control empp-num" id="fis_class1" value="100" disabled>
-                </div>
               </div>
             </fieldset>
           </div>
@@ -431,7 +490,8 @@ $sections = [
 
         <!-- Setup check + run -->
         <div class="col-lg-4">
-          <div class="card position-sticky sim-run">
+          <div class="sim-aside">
+          <div class="card sim-run">
             <div class="card-body">
               <h5>Setup</h5>
               <p>Fill in the three sections to run the simulation.</p>
@@ -455,6 +515,42 @@ $sections = [
               </button>
               <a href="/dashboard/researcher/research/view/<?= $ree_id; ?>" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
             </div>
+          </div>
+
+          <!-- Unit converter: helps bring a value to the unit each field asks for.
+               Its controls have no name, so nothing here is submitted with the simulation. -->
+          <div class="card sim-convert mt-4">
+            <div class="card-body">
+              <h5>Unit converter</h5>
+              <p>Convert a value to the unit a field asks for, then copy it.</p>
+
+              <div class="mb-3">
+                <label class="form-label" for="conv-value">Value</label>
+                <div class="input-group">
+                  <input type="text" inputmode="decimal" data-decimal="signed" class="form-control empp-num" id="conv-value" placeholder="0" autocomplete="off">
+                  <select class="form-select conv-unit" id="conv-from" aria-label="From unit"></select>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <label class="form-label mb-1" for="conv-to">Convert to</label>
+                  <button type="button" class="conv-swap" id="conv-swap" aria-label="Swap the units"><i class="bx bx-transfer-alt" aria-hidden="true"></i>Swap</button>
+                </div>
+                <select class="form-select" id="conv-to"></select>
+              </div>
+
+              <div class="conv-result" aria-live="polite">
+                <div class="conv-result-value">
+                  <span class="empp-num" id="conv-out">&ndash;</span>
+                  <span class="conv-result-unit" id="conv-out-unit"></span>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary conv-copy" id="conv-copy" disabled>
+                  <i class="bx bx-copy" aria-hidden="true"></i><span>Copy</span>
+                </button>
+              </div>
+            </div>
+          </div>
           </div>
         </div>
       </div>
@@ -505,5 +601,135 @@ $sections = [
       }
     }, 0);
   });
+})();
+
+// Unit converter. Each unit is its factor to the quantity's SI unit;
+// temperature is affine, so it converts through kelvin instead.
+(function () {
+  const Q = {
+    length: { label: 'Length (fiber diameter, particle size, thickness)', from: 'nm', to: 'µm', units: {
+      'nm': 1e-9, 'µm': 1e-6, 'mm': 1e-3, 'cm': 1e-2, 'm': 1, 'in': 0.0254 } },
+    area: { label: 'Area (filter area)', from: 'cm²', to: 'm²', units: {
+      'mm²': 1e-6, 'cm²': 1e-4, 'm²': 1, 'in²': 6.4516e-4, 'ft²': 0.09290304 } },
+    density: { label: 'Density (particle density)', from: 'g/cm³', to: 'kg/m³', units: {
+      'kg/m³': 1, 'g/cm³': 1000, 'g/mL': 1000, 'g/L': 1, 'lb/ft³': 16.01846337 } },
+    temperature: { label: 'Temperature', from: 'K', to: '°C', units: { '°C': 'C', 'K': 'K', '°F': 'F' } },
+    pressure: { label: 'Pressure', from: 'kPa', to: 'mmHg', units: {
+      'Pa': 1, 'kPa': 1000, 'mmHg': 133.322387415, 'atm': 101325, 'bar': 1e5,
+      'mbar': 100, 'psi': 6894.757293, 'mmH₂O': 9.80665, 'inH₂O': 249.08891 } },
+    velocity: { label: 'Velocity (air face velocity)', from: 'cm/s', to: 'm/s', units: {
+      'm/s': 1, 'cm/s': 0.01, 'm/min': 1 / 60, 'cm/min': 0.01 / 60, 'km/h': 1 / 3.6, 'ft/min': 0.00508 } },
+    concentration: { label: 'Mass concentration (inlet dust)', from: 'µg/m³', to: 'mg/m³', units: {
+      'µg/m³': 1e-9, 'mg/m³': 1e-6, 'g/m³': 1e-3, 'mg/L': 1e-3, 'µg/L': 1e-6 } },
+    flow: { label: 'Volumetric flow rate', from: 'mL/h', to: 'mL/min', units: {
+      'µL/min': 1e-9 / 60, 'mL/min': 1e-6 / 60, 'mL/h': 1e-6 / 3600, 'L/min': 1e-3 / 60, 'm³/h': 1 / 3600, 'm³/s': 1 } },
+    viscosity: { label: 'Dynamic viscosity', from: 'cP', to: 'Pa·s', units: {
+      'Pa·s': 1, 'mPa·s': 1e-3, 'cP': 1e-3, 'P': 0.1, 'µPa·s': 1e-6 } }
+  };
+
+  const value = document.getElementById('conv-value');
+  const from = document.getElementById('conv-from');
+  const to = document.getElementById('conv-to');
+  const out = document.getElementById('conv-out');
+  const outUnit = document.getElementById('conv-out-unit');
+  const copy = document.getElementById('conv-copy');
+  if (!from) return;
+
+  // The source unit picks the quantity: every unit, grouped by quantity.
+  // An option's value is "quantity|unit" because a symbol may repeat (mg/L).
+  Object.keys(Q).forEach(function (k) {
+    const group = document.createElement('optgroup');
+    group.label = Q[k].label;
+    Object.keys(Q[k].units).forEach(function (u) { group.appendChild(new Option(u, k + '|' + u)); });
+    from.appendChild(group);
+  });
+
+  function current() { return from.value.split('|'); }
+
+  // Target units: only those of the same quantity
+  function fillTargets(preferred) {
+    const q = current()[0];
+    to.innerHTML = '';
+    Object.keys(Q[q].units).forEach(function (u) { to.add(new Option(u, u)); });
+    const fallback = Q[q].to !== current()[1] ? Q[q].to : Q[q].from;
+    to.value = preferred && Q[q].units[preferred] !== undefined ? preferred : fallback;
+  }
+
+  function toKelvin(v, u) { return u === 'C' ? v + 273.15 : u === 'F' ? (v - 32) * 5 / 9 + 273.15 : v; }
+  function fromKelvin(v, u) { return u === 'C' ? v - 273.15 : u === 'F' ? (v - 273.15) * 9 / 5 + 32 : v; }
+
+  // Six significant figures, plain notation for everyday magnitudes
+  function format(n) {
+    if (n === 0) return '0';
+    const a = Math.abs(n);
+    if (a >= 1e-4 && a < 1e9) return String(Number(n.toPrecision(6)));
+    return n.toExponential(5).replace(/\.?0+e/, 'e');
+  }
+
+  let result = '';
+  function convert() {
+    const key = current()[0], unit = current()[1];
+    const q = Q[key];
+    const raw = value.value.trim();
+    const v = Number(raw);
+    result = '';
+    if (raw !== '' && raw !== '-' && isFinite(v)) {
+      const r = key === 'temperature'
+        ? fromKelvin(toKelvin(v, q.units[unit]), q.units[to.value])
+        : v * q.units[unit] / q.units[to.value];
+      result = format(r);
+    }
+    out.textContent = result || '–';
+    outUnit.textContent = result ? to.value : '';
+    copy.disabled = !result;
+  }
+
+  from.addEventListener('change', function () { fillTargets(to.value); convert(); });
+  to.addEventListener('change', convert);
+  value.addEventListener('input', convert);
+  // Enter here must not submit the simulation form around it
+  value.addEventListener('keydown', function (e) { if (e.key === 'Enter') e.preventDefault(); });
+
+  document.getElementById('conv-swap').addEventListener('click', function () {
+    const q = current()[0], f = current()[1];
+    from.value = q + '|' + to.value;
+    to.value = f;
+    convert();
+  });
+
+  copy.addEventListener('click', function () {
+    if (!result) return;
+    const done = function () {
+      const label = copy.querySelector('span');
+      const icon = copy.querySelector('i');
+      copy.classList.add('is-copied');
+      label.textContent = 'Copied';
+      icon.className = 'bx bx-check';
+      setTimeout(function () {
+        copy.classList.remove('is-copied');
+        label.textContent = 'Copy';
+        icon.className = 'bx bx-copy';
+      }, 1600);
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(result).then(done);
+    } else {
+      // Fallback for plain http
+      const tmp = document.createElement('textarea');
+      tmp.value = result;
+      tmp.setAttribute('readonly', '');
+      tmp.style.position = 'fixed';
+      tmp.style.opacity = '0';
+      document.body.appendChild(tmp);
+      tmp.select();
+      document.execCommand('copy');
+      document.body.removeChild(tmp);
+      done();
+    }
+  });
+
+  from.value = 'length|nm';
+  fillTargets('µm');
+  convert();
 })();
 </script>

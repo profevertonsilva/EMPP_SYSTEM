@@ -756,14 +756,12 @@ code, kbd, pre, samp {
   padding: 0;
   display: grid;
   gap: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 .auth-steps li {
   display: grid;
   grid-template-columns: 2.25rem 1fr;
   align-items: baseline;
   padding: 0.7rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   color: #e6e9f4;
   font-size: 0.9375rem;
 }
@@ -819,6 +817,78 @@ code, kbd, pre, samp {
 }
 .auth-switch a {
   font-weight: 500;
+}
+
+/* Email verification: the code is typed as a mono readout */
+.verify-email-address {
+  color: var(--empp-ink);
+  font-weight: 500;
+  word-break: break-all;
+}
+.auth-form .verify-code-input {
+  height: 3.5rem;
+  font-family: var(--empp-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.75rem;
+  font-weight: 500;
+  letter-spacing: 0.5em;
+  text-align: center;
+  padding-left: 0.5em; /* balances the trailing letter-spacing */
+  color: var(--empp-ink);
+}
+.auth-form .verify-code-input::placeholder {
+  color: var(--empp-line-strong);
+  opacity: 1;
+}
+.auth-note {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding: 0.875rem 1rem;
+  background: var(--empp-primary-soft);
+  border-radius: var(--empp-radius-sm);
+  color: var(--empp-text);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.auth-note .bx {
+  flex: none;
+  margin-top: 0.125rem;
+  font-size: 1.125rem;
+  color: var(--empp-primary);
+}
+.auth-note p {
+  margin: 0;
+}
+.auth-note strong {
+  color: var(--empp-ink);
+  font-weight: 600;
+}
+.auth-note-sender {
+  font-family: var(--empp-mono);
+  font-size: 0.8125rem;
+  color: var(--empp-ink);
+  word-break: break-all;
+}
+.verify-resend {
+  margin-top: 1.25rem;
+  color: var(--empp-muted);
+  font-size: 0.875rem;
+}
+.verify-resend .btn-link {
+  font-size: inherit;
+  font-weight: 500;
+  vertical-align: baseline;
+  text-decoration: none;
+}
+.verify-resend .btn-link:disabled {
+  color: var(--empp-muted);
+  opacity: 1;
+}
+.verify-resend-wait {
+  font-family: var(--empp-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Select2 (sign up country field) */

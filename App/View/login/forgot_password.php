@@ -9,11 +9,15 @@
 
           <span class="empp-eyebrow">Password reset</span>
           <h2>Forgot your password?</h2>
-          <p class="auth-lead">Enter the email you signed up with and we'll send you a link to reset it.</p>
+          <p class="auth-lead">Enter the email you signed up with and we'll send you a 6-digit code to set a new password.</p>
 
-          <form id="formAuthentication" action="index.html" method="POST">
+          <?php if (isset($_GET['error'])) { ?>
+            <div class="alert alert-danger" role="alert">That email address is not valid.</div>
+          <?php } ?>
+
+          <form id="formAuthentication" action="/forgot-password/send" method="POST">
             <div class="mb-4">
-              <label for="email" class="form-label">Email</label>
+              <label for="email" class="form-label">E-mail</label>
               <input
                 type="email"
                 class="form-control"
@@ -21,11 +25,12 @@
                 name="email"
                 placeholder="you@institution.edu"
                 autocomplete="email"
+                value="<?= htmlspecialchars($_SESSION['reset']['email'] ?? ''); ?>"
                 autofocus
                 required
               />
             </div>
-            <button class="btn btn-primary w-100" type="submit">Send reset link</button>
+            <button class="btn btn-primary w-100" type="submit">Send code</button>
           </form>
 
           <p class="auth-switch">

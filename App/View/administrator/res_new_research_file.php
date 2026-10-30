@@ -55,7 +55,7 @@
                             <!-- Empty state: pick or drop a file -->
                             <label for="ree_file-photo" class="empp-dropzone research-preview" id="ree-dropzone">
                                 <i class="bx bx-image-add"></i>
-                                <strong>Drop the SEM image here or click to choose</strong>
+                                <strong>Drop the SEM image here or click to choose one</strong>
                                 <span>JPG, PNG or WEBP &middot; up to 5 MB</span>
                             </label>
 
@@ -107,7 +107,7 @@
                     <div class="card-body">
                         <span class="empp-eyebrow mb-2">Before you upload</span>
                         <ul class="ps-3 mb-0 text-muted">
-                            <li class="mb-2">Use a SEM micrograph of the membrane surface.</li>
+                            <li class="mb-2">Use a SEM image of the membrane.</li>
                             <li class="mb-2">Crop out the microscope's information bar and scale bar; only the fibers should be analysed.</li>
                             <li>Keep the same magnification across samples you want to compare.</li>
                         </ul>

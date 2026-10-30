@@ -21,6 +21,48 @@ $empp_js_flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
 $empp_image_url = $_ENV['BASE_IMG'] . 'research/' . rawurlencode(basename((string) $research->__get('ree_file')));
 ?>
 <style>
+  /* Info icon next to a term; opens its explanation */
+  .info-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    margin-left: 0.125rem;
+    border: 0;
+    background: none;
+    color: var(--empp-muted);
+    font-size: 1rem;
+    line-height: 1;
+    vertical-align: -0.15em;
+    cursor: pointer;
+  }
+  .info-btn:hover {
+    color: var(--empp-primary);
+  }
+  .info-btn:focus-visible {
+    outline: 2px solid rgba(var(--empp-primary-rgb), 0.45);
+    outline-offset: 2px;
+    border-radius: 50%;
+  }
+  .info-swal {
+    text-align: left;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--empp-text);
+  }
+  .info-swal p {
+    margin: 0 0 0.75rem;
+  }
+  .info-swal p:last-child {
+    margin-bottom: 0;
+  }
+  .info-swal .info-formula {
+    padding: 0.625rem 0.875rem;
+    background: var(--empp-bg);
+    border-radius: var(--empp-radius-sm);
+    font-family: var(--empp-mono);
+    font-size: 0.8125rem;
+    color: var(--empp-ink);
+  }
   .study-image {
     position: relative;
     background: #0e1320;
@@ -352,7 +394,7 @@ $empp_image_url = $_ENV['BASE_IMG'] . 'research/' . rawurlencode(basename((strin
         <span class="empp-eyebrow mb-2">Electrospinning parameters</span>
         <div class="readout-grid">
           <div>
-            <span class="empp-eyebrow">Flow rate</span>
+            <span class="empp-eyebrow">Solution flow rate</span>
             <div class="empp-readout"><?= htmlspecialchars($research->__get('ree_flow')); ?><span class="empp-unit">mL/min</span></div>
           </div>
           <div>
@@ -360,7 +402,7 @@ $empp_image_url = $_ENV['BASE_IMG'] . 'research/' . rawurlencode(basename((strin
             <div class="empp-readout"><?= htmlspecialchars($research->__get('ree_voltage')); ?><span class="empp-unit">kV</span></div>
           </div>
           <div>
-            <span class="empp-eyebrow">Needle–collector</span>
+            <span class="empp-eyebrow">Needle–collector distance</span>
             <div class="empp-readout"><?= htmlspecialchars($research->__get('ree_distance')); ?><span class="empp-unit">cm</span></div>
           </div>
         </div>
@@ -379,7 +421,7 @@ $empp_image_url = $_ENV['BASE_IMG'] . 'research/' . rawurlencode(basename((strin
               <li class="pipeline-step <?= $has_features ? 'is-done' : 'is-next'; ?>">
                 <span class="pipeline-marker"><?= $has_features ? '<i class="bx bx-check"></i>' : '01'; ?></span>
                 <div class="pipeline-title">
-                  <h6>Haralick texture features</h6>
+                  <h6>Haralick texture features <button type="button" class="info-btn" data-info="haralick" aria-label="What are Haralick texture features?"><i class="bx bx-info-circle"></i></button></h6>
                   <span class="pipeline-status" id="step1-status"><?= $has_features ? 'Done' : 'Pending'; ?></span>
                 </div>
                 <div class="pipeline-body">
@@ -387,7 +429,7 @@ $empp_image_url = $_ENV['BASE_IMG'] . 'research/' . rawurlencode(basename((strin
                     <dl class="haralick-grid mb-0">
                       <?php foreach ($haralick as $label => $value) { ?>
                         <div>
-                          <dt><?= $label; ?></dt>
+                          <dt><?= $label; ?> <button type="button" class="info-btn" data-info="<?= strtolower($label); ?>" aria-label="What is <?= $label; ?>?"><i class="bx bx-info-circle"></i></button></dt>
                           <dd><?= number_format((float) $value, 4, '.', ''); ?></dd>
                         </div>
                       <?php } ?>
@@ -980,5 +1022,58 @@ function showNotification(type, message) {
     }
 
     button.addEventListener('click', run);
+})();
+</script>
+
+<script>
+// Explanations behind the info icons of the Haralick block
+(function () {
+    const INFO = {
+        haralick: {
+            title: 'Haralick texture features',
+            html: '<p>Statistics that describe the texture of an image. They are computed from the <strong>grey-level co-occurrence matrix (GLCM)</strong>, which counts how often each pair of grey levels appears in neighbouring pixels at a given distance and direction.</p>'
+                + '<p>In a SEM image of an electrospun membrane, they summarise how the fibres and the pores between them are arranged: how sharp, regular and uniform the mat looks.</p>'
+                + '<p>EMPP uses four of them (dissimilarity, correlation, energy and homogeneity), together with the electrospinning parameters, as inputs to the model that predicts porosity.</p>'
+        },
+        dissimilarity: {
+            title: 'Dissimilarity',
+            html: '<p>The average difference in grey level between neighbouring pixels.</p>'
+                + '<p class="info-formula">Σ P(i,j) · |i − j|</p>'
+                + '<p><strong>Higher</strong> values mean strong local contrast: sharp transitions between bright fibres and dark pores. <strong>Lower</strong> values mean a smoother image, with gradual changes in grey level.</p>'
+                + '<p>It has no fixed upper limit; it grows with the number of grey levels used.</p>'
+        },
+        correlation: {
+            title: 'Correlation',
+            html: '<p>How linearly the grey level of a pixel depends on the grey level of its neighbour.</p>'
+                + '<p class="info-formula">Σ P(i,j) · (i − μi)(j − μj) / (σi · σj)</p>'
+                + '<p>Ranges from <strong>−1 to 1</strong>. Values close to 1 mean neighbouring pixels change together in a predictable way, typical of larger, continuous structures. Values close to 0 mean the grey levels vary in a more random, fine-grained way.</p>'
+        },
+        energy: {
+            title: 'Energy',
+            html: '<p>A measure of the uniformity, or order, of the texture.</p>'
+                + '<p class="info-formula">√ Σ P(i,j)²</p>'
+                + '<p>Ranges from <strong>0 to 1</strong>. It is high when a few pairs of grey levels dominate the image (a regular, repetitive texture) and low when many different pairs occur (a complex, heterogeneous texture, as in a dense, irregular fibre mat).</p>'
+        },
+        homogeneity: {
+            title: 'Homogeneity',
+            html: '<p>How similar neighbouring pixels are to each other, also called the inverse difference moment.</p>'
+                + '<p class="info-formula">Σ P(i,j) / (1 + (i − j)²)</p>'
+                + '<p>Ranges from <strong>0 to 1</strong>. It is high when neighbouring pixels have close grey levels (a smooth, even texture) and low when they differ a lot (many edges between fibres and pores).</p>'
+        }
+    };
+
+    document.querySelectorAll('.info-btn[data-info]').forEach(function (btn) {
+        const info = INFO[btn.dataset.info];
+        if (!info) return;
+        btn.addEventListener('click', function () {
+            Swal.fire({
+                title: info.title,
+                html: '<div class="info-swal">' + info.html
+                    + '<p class="small text-muted">P(i,j) is the normalised GLCM: the probability of grey levels i and j appearing side by side.</p></div>',
+                icon: 'info',
+                confirmButtonText: 'Got it'
+            });
+        });
+    });
 })();
 </script>

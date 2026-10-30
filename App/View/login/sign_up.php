@@ -2,6 +2,20 @@
 $auth_extra_head = '<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"
       integrity="sha384-OXVF05DQEe311p6ohU11NwlnX08FzMCsyoXzGOaL+83dKAb3qS17yZJxESl8YrJQ" crossorigin="anonymous" />';
 include __DIR__ . '/../includes/auth/head.php';
+
+// Values sent back after a failed submit (passwords are never kept)
+$oldInput = $_SESSION['signup_old'] ?? [];
+unset($_SESSION['signup_old']);
+$old = function ($key) use ($oldInput) {
+    return htmlspecialchars($oldInput[$key] ?? '', ENT_QUOTES, 'UTF-8');
+};
+$signupError = $_GET['error'] ?? '';
+$signupErrors = [
+    'fields' => 'Fill in every field to create the account.',
+    'email-invalid' => 'That email address is not valid.',
+    'email-taken' => 'An account already uses this email. <a href="/sign-in">Sign in</a>; if it is not confirmed yet, we will send a new code.',
+    'password-match' => 'The passwords do not match. Type the same password in both fields.',
+];
 ?>
 
     <div class="auth-shell">
@@ -15,34 +29,36 @@ include __DIR__ . '/../includes/auth/head.php';
           <h2>Create your account</h2>
           <p class="auth-lead">Tell us who you are and how you plan to use EMPP.</p>
 
+          <?php if (isset($signupErrors[$signupError])) { ?>
+            <div class="alert alert-danger" role="alert"><?= $signupErrors[$signupError]; ?></div>
+          <?php } ?>
+
           <form id="formAuthentication" action="/signup" method="POST">
             <div class="mb-3">
               <label for="name" class="form-label">Full name</label>
-              <input type="text" class="form-control" id="name" name="name" placeholder="Your full name" autocomplete="name" required />
+              <input type="text" class="form-control" id="name" name="name" placeholder="Your full name" autocomplete="name" value="<?= $old('name'); ?>" required />
             </div>
 
             <div class="row g-3 mb-3">
               <div class="col-md-6">
                 <label for="institution" class="form-label">Institution</label>
-                <input type="text" class="form-control" id="institution" name="institution" placeholder="University or company" autocomplete="organization" required />
+                <input type="text" class="form-control" id="institution" name="institution" placeholder="University or company" autocomplete="organization" value="<?= $old('institution'); ?>" required />
               </div>
               <div class="col-md-6">
                 <label for="academic" class="form-label">Academic degree</label>
                 <select class="form-select" id="academic" name="academic" required>
                   <option value="">Select your degree</option>
-                  <option value="Undergraduate Student">Undergraduate Student</option>
-                  <option value="Bachelor">Bachelor</option>
-                  <option value="Master">Master</option>
-                  <option value="PHD Degree">PhD</option>
-                  <option value="other">Other</option>
+                  <?php foreach (['Undergraduate Student' => 'Undergraduate Student', 'Bachelor' => 'Bachelor', 'Master' => 'Master', 'PHD Degree' => 'PhD', 'other' => 'Other'] as $value => $label): ?>
+                  <option value="<?= $value; ?>"<?= ($oldInput['academic'] ?? '') === $value ? ' selected' : ''; ?>><?= $label; ?></option>
+                  <?php endforeach; ?>
                 </select>
-                <input type="text" class="form-control mt-2" id="specific" name="specific" placeholder="Specify your degree" style="display:none" />
+                <input type="text" class="form-control mt-2" id="specific" name="specific" placeholder="Specify your degree" value="<?= $old('specific'); ?>"<?= ($oldInput['academic'] ?? '') === 'other' ? '' : ' style="display:none"'; ?> />
               </div>
             </div>
 
             <div class="mb-3">
               <label for="purpose" class="form-label">Purpose</label>
-              <textarea class="form-control" id="purpose" name="purpose" placeholder="What will you use EMPP for?" rows="3" required></textarea>
+              <textarea class="form-control" id="purpose" name="purpose" placeholder="What will you use EMPP for?" rows="3" required><?= $old('purpose'); ?></textarea>
             </div>
 
             <div class="mb-3">
@@ -50,22 +66,32 @@ include __DIR__ . '/../includes/auth/head.php';
               <select class="form-control form-select" id="country" name="country" required>
                 <option value="">Select your country</option>
                 <?php foreach ($this->getView()->countries as $country): ?>
-                <option value="<?= $country->cou_id; ?>"><?= $country->cou_name; ?></option>
+                <option value="<?= $country->cou_id; ?>"<?= (string) ($oldInput['country'] ?? '') === (string) $country->cou_id ? ' selected' : ''; ?>><?= $country->cou_name; ?></option>
                 <?php endforeach; ?>
               </select>
             </div>
 
+            <div class="mb-3">
+              <label for="email" class="form-label">E-mail</label>
+              <input type="email" class="form-control<?= in_array($signupError, ['email-taken', 'email-invalid']) ? ' is-invalid' : ''; ?>" id="email" name="email" placeholder="you@institution.edu" autocomplete="email" value="<?= $old('email'); ?>" aria-describedby="email-help" required />
+              <div id="email-help" class="form-text">We will send a 6-digit code to this address to confirm it.</div>
+            </div>
+
             <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="you@institution.edu" autocomplete="email" required />
-              </div>
               <div class="col-md-6 form-password-toggle">
                 <label class="form-label" for="password">Password</label>
                 <div class="input-group input-group-merge">
-                  <input type="password" id="password" class="form-control" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" autocomplete="new-password" required />
+                  <input type="password" id="password" class="form-control" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" autocomplete="new-password" required />
                   <span class="input-group-text cursor-pointer" aria-label="Show password"><i class="bx bx-hide"></i></span>
                 </div>
+              </div>
+              <div class="col-md-6 form-password-toggle">
+                <label class="form-label" for="password_confirm">Confirm password</label>
+                <div class="input-group input-group-merge">
+                  <input type="password" id="password_confirm" class="form-control<?= $signupError === 'password-match' ? ' is-invalid' : ''; ?>" name="password_confirm" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password_confirm-feedback" autocomplete="new-password" required />
+                  <span class="input-group-text cursor-pointer" aria-label="Show password"><i class="bx bx-hide"></i></span>
+                </div>
+                <div id="password_confirm-feedback" class="invalid-feedback<?= $signupError === 'password-match' ? ' d-block' : ''; ?>">The passwords do not match.</div>
               </div>
             </div>
 
@@ -144,6 +170,24 @@ include __DIR__ . '/../includes/auth/head.php';
             } else {
                 $('#specific').hide();
                 $('#specific').val('');
+            }
+        });
+
+        // Confirm password: checked on the client too, so the form is not sent in vain
+        var $password = $('#password'), $confirm = $('#password_confirm');
+        function checkConfirm() {
+            var mismatch = $confirm.val() !== '' && $confirm.val() !== $password.val();
+            $confirm.toggleClass('is-invalid', mismatch);
+            $('#password_confirm-feedback').toggleClass('d-block', mismatch);
+            $confirm[0].setCustomValidity(mismatch ? 'The passwords do not match.' : '');
+        }
+        $password.on('input', function () { if ($confirm.val() !== '') checkConfirm(); });
+        $confirm.on('input blur', checkConfirm);
+        $('#formAuthentication').on('submit', function (event) {
+            checkConfirm();
+            if (!this.checkValidity()) {
+                event.preventDefault();
+                this.reportValidity();
             }
         });
     });

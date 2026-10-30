@@ -13,13 +13,17 @@
 
           <?php if (isset($_GET['error'])) { ?>
             <div class="alert alert-danger" role="alert">Invalid email or password.</div>
+          <?php } elseif (isset($_GET['verified'])) { ?>
+            <div class="alert alert-success" role="status">Email confirmed. Sign in to start your first study.</div>
+          <?php } elseif (isset($_GET['reset'])) { ?>
+            <div class="alert alert-success" role="status">Password changed. Sign in with your new password.</div>
           <?php } ?>
 
           <form id="formAuthentication" action="/signin" method="POST">
             <div class="mb-3">
-              <label for="email" class="form-label">Email or username</label>
+              <label for="email" class="form-label">E-mail</label>
               <input
-                type="text"
+                type="email"
                 class="form-control"
                 id="email"
                 name="email-username"

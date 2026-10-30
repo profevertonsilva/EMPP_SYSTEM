@@ -40,6 +40,7 @@ $empp_menu_item = function ($key, $href, $icon, $label) use ($empp_menu_active) 
     $empp_menu_item('researchers', '/dashboard/administrator/researchers', 'fa-solid fa-user-tie', 'Researchers');
     $empp_menu_item('all_research', '/dashboard/administrator/research-studies', 'fa-solid fa-layer-group', 'All Research Studies');
     $empp_menu_item('dataset', '/dashboard/administrator/dataset', 'fa-solid fa-images', 'Image Dataset');
+    $empp_menu_item('settings', '/dashboard/administrator/settings', 'fa-solid fa-sliders', 'System Settings');
     ?>
 
     <li class="menu-header"><span class="menu-header-text">Account</span></li>

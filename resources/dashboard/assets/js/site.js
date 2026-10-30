@@ -19,7 +19,7 @@
   /*
    * A SEM-like mat of electrospun fibres: long, gently curving strands in
    * depth layers (far ones darker and thinner), each shaded as a cylinder,
-   * a few beads, then detector grain.
+   * then detector grain.
    */
   function drawMicrograph(canvas) {
     var rect = canvas.getBoundingClientRect();
@@ -84,17 +84,10 @@
       ctx.lineWidth = Math.max(0.8 * unit, w * 0.35);
       ctx.stroke();
 
-      // The occasional bead, a common electrospinning defect
+      // Beads are no longer drawn (bead-free mat), but their random draws are
+      // still consumed so every fibre keeps the position it always had
       if (depth > 0.4 && rand() < 0.12) {
-        var p = pts[(pts.length * (0.2 + rand() * 0.6)) | 0];
-        var r = w * (1.6 + rand());
-        var g = ctx.createRadialGradient(p[0] - r * 0.3, p[1] - r * 0.3, r * 0.1, p[0], p[1], r);
-        g.addColorStop(0, 'rgb(' + hi + ',' + hi + ',' + hi + ')');
-        g.addColorStop(1, 'rgb(' + (grey | 0) + ',' + (grey | 0) + ',' + (grey | 0) + ')');
-        ctx.beginPath();
-        ctx.ellipse(p[0], p[1], r * 1.4, r, rand() * Math.PI, 0, Math.PI * 2);
-        ctx.fillStyle = g;
-        ctx.fill();
+        rand(); rand(); rand();
       }
     }
 

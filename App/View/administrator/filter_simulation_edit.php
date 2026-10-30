@@ -40,7 +40,7 @@
                         <input type="text" class="form-control" name="fis_velocity" id="fis_velocity" value="<?= $this->getView()->filter_simulation->fis_velocity; ?>" required>
                         <label>Filter area (m<sup>2</sup>)</label>
                         <input type="text" class="form-control" name="fis_area" id="fis_area" value="<?= $this->getView()->filter_simulation->fis_area; ?>" required>
-                        <label>Fiber density, &rho;<sub>f</sub>(kg/m<sup>3</sup>)</label>
+                        <label>Particle density, &rho;<sub>p</sub> (kg/m<sup>3</sup>)</label>
                         <input type="text" class="form-control" name="fis_density" id="fis_density" value="<?= $this->getView()->filter_simulation->fis_density; ?>" required>
                         <label>Minimum particle size, d<sub>pi,min</sub>(&mu;m)</label><br>
                         <small class="text-muted">Minimum particle size in the distribution. Keep it as "zero".</small>

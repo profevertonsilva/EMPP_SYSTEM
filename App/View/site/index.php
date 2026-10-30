@@ -26,22 +26,21 @@ foreach ($sim['curve'] as $i => $p) {
 $mpps_x = round($px($sim['mpps'] / 1000), 1);
 $mpps_y = round($py($sim['emin'] / 100), 1);
 
-$has_affiliation = array_filter([$res['institution'], $res['programme'], $res['lab'], $res['supervisor'], $res['co_supervisor']]);
+// Research credits from System settings (administrator)
+$researchers = array_values(array_filter($res['people'], function ($p) { return $p['per_role'] === 'researcher'; }));
+$supervisors = array_values(array_filter($res['people'], function ($p) { return $p['per_role'] === 'supervisor'; }));
+$names = function ($list) {
+    $n = array_map(function ($p) { return $p['per_name']; }, $list);
+    return count($n) > 1 ? implode(', ', array_slice($n, 0, -1)) . ' and ' . end($n) : implode('', $n);
+};
+$footer_name = $researchers[0]['per_name'] ?? 'EMPP';
+$logos = array_values(array_filter(array_merge($res['institutions'], $res['funders']), function ($x) { return !empty($x['ins_logo'] ?? $x['fun_logo'] ?? null); }));
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?= $e($v->title_page); ?></title>
-  <meta name="description" content="EMPP turns an SEM image of an electrospun membrane and its process parameters into texture features, a predicted porosity and a filtration performance simulation. Free for researchers.">
-  <meta name="theme-color" content="#1a2547">
-  <link rel="icon" type="image/png" href="<?= $_ENV['BASE_URL']; ?>resources/img/icone_empp.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= $_ENV['BASE_CSS']; ?>empp.css">
-  <link rel="stylesheet" href="<?= $_ENV['BASE_CSS']; ?>site.css">
+<?php
+$page = 'home';
+$page_title = $v->title_page;
+$page_desc = 'EMPP turns an SEM image of an electrospun membrane and its process parameters into texture features, a predicted porosity and a filtration performance simulation. Free for researchers.';
+$extra_head = <<<'HTML'
   <script>
     // Before first paint: hold the record's animated parts at their start state,
     // so the study run never erases values the visitor has already seen.
@@ -52,29 +51,9 @@ $has_affiliation = array_filter([$res['institution'], $res['programme'], $res['l
       setTimeout(function () { if (!window.emppSiteReady) d.documentElement.classList.remove('js-run'); }, 4000);
     })(document);
   </script>
-</head>
-<body class="site">
-  <a class="site-skip" href="#main">Skip to content</a>
-
-  <header class="site-field">
-    <nav class="site-nav site-wrap" aria-label="Main">
-      <a class="site-logo" href="/" aria-label="EMPP home">
-        <img src="<?= $_ENV['BASE_URL']; ?>resources/img/logo_empp_w.png" alt="EMPP — Electrospun Membrane Property Predictor" width="2299" height="705">
-      </a>
-      <ul class="site-links">
-        <li><a href="#method">How it works</a></li>
-        <li><a href="#simulation">Simulation</a></li>
-        <li><a href="#research">The research</a></li>
-      </ul>
-      <div class="site-nav-actions">
-        <?php if ($logged) { ?>
-          <a class="site-btn site-btn-light" href="<?= $e($v->dashboard_url); ?>">Open dashboard</a>
-        <?php } else { ?>
-          <a class="site-signin" href="/sign-in">Sign in</a>
-          <a class="site-btn site-btn-light" href="/sign-up">Create free account</a>
-        <?php } ?>
-      </div>
-    </nav>
+HTML;
+include __DIR__ . '/partials/top.php';
+?>
 
     <div class="site-hero site-wrap">
       <h1>From an SEM image to filtration performance.</h1>
@@ -107,21 +86,21 @@ $has_affiliation = array_filter([$res['institution'], $res['programme'], $res['l
               <?php // Scale matches the drawn fibres at the sample's d_f: the field is about 63 µm wide ?>
               <div class="rec-bar" aria-hidden="true"><span class="rec-bar-line"></span>10 µm</div>
             </div>
-            <figcaption>Synthetic micrograph, drawn in your browser. A real study uses your SEM image.</figcaption>
+            <figcaption>Example of a generated micrograph; use an SEM image for your study.</figcaption>
           </figure>
 
           <div class="rec-data">
             <section class="rec-block" data-step="1" aria-labelledby="b1">
               <h3 id="b1"><span class="rec-no" aria-hidden="true">1</span>Process parameters</h3>
               <dl class="rec-values">
-                <div><dt>Flow rate</dt><dd><?= $num($s['flow']); ?><span>mL/min</span></dd></div>
+                <div><dt>Solution flow rate</dt><dd><?= $num($s['flow']); ?><span>mL/min</span></dd></div>
                 <div><dt>Applied voltage</dt><dd><?= $num($s['voltage'], 0); ?><span>kV</span></dd></div>
                 <div><dt>Needle–collector distance</dt><dd><?= $num($s['distance'], 0); ?><span>cm</span></dd></div>
               </dl>
             </section>
 
             <section class="rec-block" data-step="2" aria-labelledby="b2">
-              <h3 id="b2"><span class="rec-no" aria-hidden="true">2</span>Texture features <small>Haralick</small></h3>
+              <h3 id="b2"><span class="rec-no" aria-hidden="true">2</span>Haralick texture features </h3>
               <dl class="rec-values rec-values-grid">
                 <?php foreach ($s['features'] as $label => $value) { ?>
                   <div><dt><?= $e($label); ?></dt><dd><?= $num($value, 4); ?></dd></div>
@@ -186,7 +165,7 @@ $has_affiliation = array_filter([$res['institution'], $res['programme'], $res['l
         </section>
 
         <footer class="rec-foot">
-          <p>Your own study fills this record in from your image and parameters.</p>
+          <p>The Haralick texture parameters for your image are populated automatically.</p>
           <a class="site-btn site-btn-primary" href="<?= $logged ? $e($v->dashboard_url) : '/sign-up'; ?>"><?= $logged ? 'Open dashboard' : 'Run your first study'; ?></a>
         </footer>
       </article>
@@ -206,23 +185,23 @@ $has_affiliation = array_filter([$res['institution'], $res['programme'], $res['l
         </div>
         <div class="site-tr" role="row">
           <span role="cell"><b>1</b>SEM image</span>
-          <span role="cell">A micrograph of the membrane surface (JPG, PNG or WEBP, up to 5 MB), cropped in the browser to the fibres.</span>
-          <span role="cell">The image stored with your study.</span>
+          <span role="cell">A micrograph of the membrane surface (JPG, PNG or WEBP, up to 5 MB), cropped in the browser to the fibers</span>
+          <span role="cell">The image stored with your research</span>
         </div>
         <div class="site-tr" role="row">
           <span role="cell"><b>2</b>Texture features</span>
-          <span role="cell">Nothing more: one click runs the analysis.</span>
-          <span role="cell">Dissimilarity, correlation, energy and homogeneity.</span>
+          <span role="cell">Nothing more: one click runs the analysis</span>
+          <span role="cell">Dissimilarity, correlation, energy, and homogeneity</span>
         </div>
         <div class="site-tr" role="row">
           <span role="cell"><b>3</b>Porosity</span>
-          <span role="cell">Syringe flow rate, applied voltage and needle–collector distance.</span>
-          <span role="cell">Predicted membrane porosity, in percent.</span>
+          <span role="cell">Solution flow rate, applied voltage and needle–collector distance</span>
+          <span role="cell">Predicted membrane porosity</span>
         </div>
         <div class="site-tr" role="row">
           <span role="cell"><b>4</b>Filtration simulation</span>
-          <span role="cell">Thickness, fibre diameter and density, filter area, air conditions, particle size range and inlet concentration.</span>
-          <span role="cell">Grade and overall efficiency, pressure drop, quality factor, MPPS, outlet concentration and charts.</span>
+          <span role="cell">Membrane thickness, average fiber diameter, particle density, filter area, air conditions, particle size range, and inlet concentration</span>
+          <span role="cell">Grade and overall filtration efficiency, pressure drop, quality factor, and MPPS</span>
         </div>
       </div>
     </section>
@@ -253,65 +232,28 @@ $has_affiliation = array_filter([$res['institution'], $res['programme'], $res['l
       </figure>
     </section>
 
-    <!-- The research -->
+    <!-- The research: a summary; the full page is /research -->
     <section class="site-section site-wrap site-research" id="research" aria-labelledby="research-title">
       <div class="site-section-head">
         <h2 id="research-title">The research</h2>
-        <p>EMPP is part of the <?= $e(strtolower($res['degree'])); ?> of <?= $e($res['author']); ?>. It joins image texture analysis, a trained porosity model and classical filtration theory in one tool, and it is free to use.</p>
+        <p>
+          EMPP comes from the research of <?= $e($researchers ? $names($researchers) : $footer_name); ?><?= $supervisors ? ', supervised by ' . $e($names($supervisors)) : ''; ?>.
+          It joins image texture analysis, a trained porosity model and classical filtration theory in one tool, and it is free to use.
+        </p>
         <p>Your studies are private to your account; the platform's administrators can see them.</p>
       </div>
-      <?php if ($has_affiliation || $res['publications']) { ?>
-        <div class="site-credits">
-          <?php if ($has_affiliation) { ?>
-            <dl>
-              <?php foreach (['institution' => 'Institution', 'programme' => 'Programme', 'lab' => 'Laboratory', 'supervisor' => 'Supervisor', 'co_supervisor' => 'Co-supervisor'] as $key => $label) {
-                if (!empty($res[$key])) { ?>
-                  <div><dt><?= $label; ?></dt><dd><?= $e($res[$key]); ?></dd></div>
-              <?php } } ?>
-            </dl>
+      <?php if ($logos) { ?>
+        <ul class="site-logos" aria-label="Institutions and funding">
+          <?php foreach ($logos as $x) {
+            $name = $x['ins_name'] ?? $x['fun_name'];
+            $file = $x['ins_logo'] ?? $x['fun_logo']; ?>
+            <li><img src="<?= $e($_ENV['BASE_IMG'] . 'site/' . rawurlencode($file)); ?>" alt="<?= $e($name); ?>" loading="lazy"></li>
           <?php } ?>
-          <?php if ($res['publications']) { ?>
-            <h3>Publications</h3>
-            <ol class="site-pubs">
-              <?php foreach ($res['publications'] as $pub) { ?>
-                <li>
-                  <cite><?= $e($pub['title'] ?? ''); ?></cite>
-                  <?= $e(trim(($pub['authors'] ?? '') . ' · ' . ($pub['venue'] ?? '') . ' · ' . ($pub['year'] ?? ''), ' ·')); ?>
-                  <?php if (!empty($pub['doi'])) { ?>
-                    <a href="https://doi.org/<?= $e($pub['doi']); ?>" rel="noopener">doi:<?= $e($pub['doi']); ?></a>
-                  <?php } ?>
-                </li>
-              <?php } ?>
-            </ol>
-          <?php } ?>
-        </div>
+        </ul>
       <?php } ?>
+      <a class="site-more" href="/research">About the research: team, publications and funding <span aria-hidden="true">→</span></a>
     </section>
 
-    <!-- Close -->
-    <section class="site-close" aria-labelledby="close-title">
-      <div class="site-wrap">
-        <h2 id="close-title">Run your first study</h2>
-        <p>Bring an SEM image of your membrane and the parameters you spun it with.</p>
-        <div class="site-hero-actions">
-          <?php if ($logged) { ?>
-            <a class="site-btn site-btn-light" href="<?= $e($v->dashboard_url); ?>">Open dashboard</a>
-          <?php } else { ?>
-            <a class="site-btn site-btn-light" href="/sign-up">Create free account</a>
-            <a class="site-btn site-btn-ghost" href="/sign-in">Sign in</a>
-          <?php } ?>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="site-wrap">
-      <img src="<?= $_ENV['BASE_URL']; ?>resources/img/logo_empp_w.png" alt="EMPP" width="2299" height="705">
-      <p>Electrospun Membrane Property Predictor · © <?= date('Y'); ?> <?= $e($res['author']); ?><?= $res['contact'] ? ' · <a href="mailto:' . $e($res['contact']) . '">' . $e($res['contact']) . '</a>' : ''; ?></p>
-    </div>
-  </footer>
-
-  <script src="<?= $_ENV['BASE_JS']; ?>site.js" defer></script>
-</body>
-</html>
+<?php
+$scripts = [$_ENV['BASE_JS'] . 'site.js'];
+include __DIR__ . '/partials/bottom.php';

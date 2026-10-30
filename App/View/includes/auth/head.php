@@ -46,6 +46,8 @@
     <!-- Helpers -->
     <script src="<?= $_ENV['BASE_VENDOR']; ?>js/helpers.js"></script>
     <script src="<?= $_ENV['BASE_JS']; ?>config.js"></script>
+    <!-- Validation messages in English, whatever the browser's language -->
+    <script src="<?= $_ENV['BASE_JS']; ?>empp-validity.js" defer></script>
   </head>
 
   <body>

@@ -11,10 +11,13 @@ class LoginModel
     private $log_confirmed;
     private $log_type;
     private $log_token;
+    private $log_code_expires;
+    private $log_code_attempts;
     private $log_create;
 
 
     private $res_photo;
+    private $res_name;
     
 
     
