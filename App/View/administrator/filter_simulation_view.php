@@ -98,10 +98,10 @@ $sim_knudsen_a = $this->getView()->simulation->sim_knudsen; //Absolute values
 $a = round(log(100000000 / 1.00000001) / log($max_particle_size / $min_particle_size), 1);
 $a_a = log(100000000 / 1.00000001) / log($max_particle_size_a / $min_particle_size_a); //Absolute values
 
-$dm = round($max_particle_size / pow(log(1 / 0.00000001), (1 / $a)), 1);
+$dm = roundSig($max_particle_size / pow(log(1 / 0.00000001), (1 / $a)));
 $dm_a = $max_particle_size_a / pow(log(1 / 0.00000001), (1 / $a_a)); //Absolute values
 
-$delta_dpi = round(($max_particle_size - $min_particle_size) / $class, 1);
+$delta_dpi = roundSig(($max_particle_size - $min_particle_size) / $class);
 $delta_dpi_a = ($max_particle_size_a - $min_particle_size_a) / $class_a; //Absolute values
 
 $wi_discrete_sum = 0;
@@ -134,14 +134,8 @@ for ($x = 0; $x <= $class; $x++) {
   array_push($dpi_data, $dpi);
   array_push($dpi_data_a, $dpi_a); //Absolute values
 
-  if ($x == 0) {
-    $wi_discrete = wiDiscrete($a, $dm, $dpi, $delta_dpi);
-    $wi_discrete_a = wiDiscrete($a, $dm, $dpi_a, $delta_dpi); //Absolute values
-
-  } else {
-    $wi_discrete = wiDiscrete($a, $dm, $dpi, $delta_dpi);
-    $wi_discrete_a = wiDiscrete($a, $dm, $dpi_a, $delta_dpi); //Absolute values
-  }
+  $wi_discrete = wiDiscrete($a, $dm, $dpi, $delta_dpi);
+  $wi_discrete_a = wiDiscrete($a_a, $dm_a, $dpi_a, $delta_dpi_a); //Absolute values
   array_push($wi_discrete_data, $wi_discrete);
   array_push($wi_discrete_data_a, $wi_discrete_a); //Absolute values
 
@@ -166,7 +160,7 @@ for ($x = 0; $x <= $class; $x++) {
   $dpi_a = dpi($min_particle_size_a, $max_particle_size_a, $x, $class_a); //Absolute values
 
   $wi_discrete = round(htmlspecialchars(wiDiscrete($a, $dm, $dpi, $delta_dpi)), 4);
-  $wi_discrete_a = wiDiscrete($a, $dm, $dpi_a, $delta_dpi_a); //Absolute values
+  $wi_discrete_a = wiDiscrete($a_a, $dm_a, $dpi_a, $delta_dpi_a); //Absolute values
 
   $wi_discrete_norm = round(htmlspecialchars($wi_discrete / $wi_discrete_sum), 4);
   $wi_discrete_norm_a = $wi_discrete_a / $wi_discrete_sum_a; //Absolute values
@@ -186,6 +180,14 @@ $wi_accumulated = 0;
 function dpi($dpi_min, $dpi_max, $terms_n, $class)
 {
   return exp(log($dpi_min) + $terms_n * ((log($dpi_max) - log($dpi_min)) / $class));
+}
+
+// One decimal, as before, but keeps two significant digits for values below 1:
+// sub-micron sizes rounded to one decimal became 0 and broke the division below.
+function roundSig($value)
+{
+  if ($value == 0) return 0;
+  return round($value, max(1, 1 - (int) floor(log10(abs($value)))));
 }
 
 function wiDiscrete($a, $dm, $dpi, $delta_dpi)
@@ -479,6 +481,14 @@ exit;  */
     justify-content: space-between;
     gap: 0.5rem;
   }
+  /* Math symbols in the uppercase mono labels: the mono font has no Δ glyph and uppercase would turn Δp into ΔP */
+  .kpi-symbol {
+    font-family: var(--bs-body-font-family, sans-serif);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+  }
   .kpi-info {
     flex-shrink: 0;
     margin: -0.3rem -0.4rem 0 0;
@@ -770,7 +780,7 @@ ob_start(); ?>
                         <td style="text-align: center; font-weight: bold;">sum</td>
                         <td><?= htmlspecialchars(round($wi_discrete_sum, 4)) ?></td>
                         <td style="text-align: center; font-weight: bold;">&#916;d<sub>pi</sub>(µm)</td>
-                        <td><?= number_format($delta_dpi, 2, '.', '') ?></td>
+                        <td><?= $delta_dpi ?></td>
                       </tr>
                       <tr>
                         <td colspan="2" style="text-align: center; font-weight: bold;">Class</td>
@@ -1031,6 +1041,13 @@ $band = function ($value, array $bands) {
   return [$hit, $rows];
 };
 $n = function ($v, $d = 2) { return $v === null ? '—' : number_format($v, $d, '.', ''); };
+// Values too small for $d decimals (e.g. QF 0.00086 Pa⁻¹) would print as 0.00: show them as a × 10ⁿ
+$sci = function ($v, $d = 2) use ($n) {
+  if ($v === null || $v == 0 || abs($v) >= pow(10, -$d)) return $n($v, $d);
+  $exp = (int) floor(log10(abs($v)));
+  $sup = strtr((string) $exp, ['-' => '⁻', '0' => '⁰', '1' => '¹', '2' => '²', '3' => '³', '4' => '⁴', '5' => '⁵', '6' => '⁶', '7' => '⁷', '8' => '⁸', '9' => '⁹']);
+  return number_format($v / pow(10, $exp), $d, '.', '') . ' × 10' . $sup;
+};
 
 $kpi_assessment = [];
 
@@ -1068,7 +1085,7 @@ $kpi_assessment['pressure_drop'] = [
   ['range' => '< 0.02 Pa⁻¹', 'label' => 'Low', 'level' => 'poor', 'test' => function ($v) { return true; }],
 ]);
 $kpi_assessment['quality_factor'] = [
-  'value' => $n($quality_factor) . ' Pa⁻¹', 'verdict' => $hit['label'] ?? '—', 'level' => $hit['level'] ?? 'neutral', 'bands' => $rows,
+  'value' => $sci($quality_factor) . ' Pa⁻¹', 'verdict' => $hit['label'] ?? '—', 'level' => $hit['level'] ?? 'neutral', 'bands' => $rows,
   'text' => 'Commercial glass-fibre and melt-blown media are usually around 0.01–0.04 Pa⁻¹; electrospun nanofibre media often reach 0.05 or more. Note that here QF uses the mass-based overall efficiency, which gives higher values than a QF computed from the efficiency at the MPPS, so compare it with QFs calculated the same way.',
 ];
 
@@ -1137,7 +1154,7 @@ $kpi_assessment['flow_rate'] = [
 
 // Outlet concentration (depends on the inlet and on the applicable limit)
 $kpi_assessment['outlet'] = [
-  'value' => $n($outlet_dust_concentration) . ' mg/m³', 'verdict' => 'Depends on the applicable limit', 'level' => 'neutral', 'bands' => [],
+  'value' => $sci($outlet_dust_concentration) . ' mg/m³', 'verdict' => 'Depends on the applicable limit', 'level' => 'neutral', 'bands' => [],
   'text' => $n(100 - $overall_filter_efficiency) . ' % of the inlet concentration you entered (' . $n((float) $concentration) . ' mg/m³) reaches the clean side. There is no universal threshold: compare it with the exposure or emission limit of your application. For scale, the WHO 24-hour guideline for PM<sub>2.5</sub> is 0.015 mg/m³.',
 ];
 
@@ -1181,12 +1198,12 @@ $ree_id = (int) $this->getView()->filter_simulation->__get('fk_research_ree_id')
         <div class="empp-readout"><?= $fmt($overall_filter_efficiency); ?><span class="empp-unit">%</span></div>
       </div>
       <div class="kpi-hero">
-        <?php $kpi_label('pressure_drop', 'Pressure drop, &Delta;P'); ?>
+        <?php $kpi_label('pressure_drop', 'Pressure drop, <span class="kpi-symbol">&Delta;p</span>'); ?>
         <div class="empp-readout"><?= $fmt($pressure_drop); ?><span class="empp-unit">Pa</span></div>
       </div>
       <div class="kpi-hero">
         <?php $kpi_label('quality_factor', 'Quality factor, QF'); ?>
-        <div class="empp-readout"><?= $fmt($quality_factor); ?><span class="empp-unit">Pa<sup>-1</sup></span></div>
+        <div class="empp-readout"><?= $sci($quality_factor); ?><span class="empp-unit">Pa<sup>-1</sup></span></div>
       </div>
       <div>
         <?php $kpi_label('mpps', 'MPPS'); ?>
@@ -1204,12 +1221,12 @@ $ree_id = (int) $this->getView()->filter_simulation->__get('fk_research_ree_id')
       </div>
       <div>
         <?php $kpi_label('outlet', 'Outlet concentration'); ?>
-        <div class="empp-readout"><?= $fmt($outlet_dust_concentration); ?><span class="empp-unit">mg/m&sup3;</span></div>
+        <div class="empp-readout"><?= $sci($outlet_dust_concentration); ?><span class="empp-unit">mg/m&sup3;</span></div>
       </div>
       <div>
         <?php $kpi_label('viscous_inertial', 'Viscous / inertial'); ?>
         <div class="empp-readout"><?= $fmt($viscous_contribution, 1); ?><span class="empp-unit">/ <?= $fmt($inertial_contribution, 1); ?> %</span></div>
-        <small>Contribution to &Delta;P</small>
+        <small>Contribution to &Delta;p</small>
       </div>
     </div>
 
@@ -1224,16 +1241,16 @@ $ree_id = (int) $this->getView()->filter_simulation->__get('fk_research_ree_id')
           how: 'Grade efficiency of each size class weighted by that class\'s mass fraction: E<sub>overall</sub> = &Sigma; E<sub>grade</sub>(d<sub>pi</sub>) &middot; W<sub>i</sub>.'
         },
         pressure_drop: {
-          title: 'Pressure drop, &Delta;P',
+          title: 'Pressure drop, &Delta;p',
           what: 'The resistance the membrane offers to the air flow: the pressure lost between the upstream and downstream faces at the chosen face velocity.',
           read: 'Lower is better. It sets the energy needed to push air through the filter (or the breathing effort, for a mask).',
-          how: 'Darcy (viscous) plus Forchheimer (inertial) terms over the thickness: &Delta;P = (&mu;&middot;v<sub>s</sub>/k<sub>1</sub> + &alpha;&middot;v<sub>s</sub>&sup2;/k<sub>2</sub>) &middot; L, where &mu; is the air viscosity and &alpha; the packing density (1 &minus; &epsilon;).'
+          how: 'Darcy (viscous) plus Forchheimer (inertial) terms over the thickness: &Delta;p = (&mu;&middot;v<sub>s</sub>/k<sub>1</sub> + &alpha;&middot;v<sub>s</sub>&sup2;/k<sub>2</sub>) &middot; L, where &mu; is the air viscosity and &alpha; the packing density (1 &minus; &epsilon;).'
         },
         quality_factor: {
           title: 'Quality factor, QF',
           what: 'The trade-off between capturing particles and letting air through, in a single number. It is the usual metric for comparing different filter media.',
           read: 'Higher is better: more efficiency for the same pressure drop.',
-          how: 'QF = &minus;ln(1 &minus; E<sub>overall</sub>) / &Delta;P, in Pa<sup>&minus;1</sup>.'
+          how: 'QF = &minus;ln(1 &minus; E<sub>overall</sub>) / &Delta;p, in Pa<sup>&minus;1</sup>.'
         },
         mpps: {
           title: 'Most penetrating particle size (MPPS)',
@@ -1263,7 +1280,7 @@ $ree_id = (int) $this->getView()->filter_simulation->__get('fk_research_ree_id')
           title: 'Viscous / inertial contribution',
           what: 'How the pressure drop splits between the viscous term (friction of air flowing slowly around the fibres) and the inertial term (losses that grow with the square of the velocity).',
           read: 'A viscous-dominated split means laminar flow: the pressure drop grows roughly in proportion to the air velocity. A large inertial share means it grows faster at higher velocities.',
-          how: 'Viscous % = (&mu;&middot;v<sub>s</sub>/k<sub>1</sub>&middot;L) / &Delta;P; inertial % is the remainder.'
+          how: 'Viscous % = (&mu;&middot;v<sub>s</sub>/k<sub>1</sub>&middot;L) / &Delta;p; inertial % is the remainder.'
         }
       };
 
