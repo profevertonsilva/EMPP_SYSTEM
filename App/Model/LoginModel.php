@@ -31,4 +31,10 @@ class LoginModel
     {
         return $this->$nome;
     }
+
+    // Without this, isset()/empty() on the private fields always report them as unset
+    public function __isset($nome)
+    {
+        return isset($this->$nome);
+    }
 }
