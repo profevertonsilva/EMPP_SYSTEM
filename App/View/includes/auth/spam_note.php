@@ -3,6 +3,6 @@
   <i class="bx bx-envelope" aria-hidden="true"></i>
   <p>
     <strong>Not in your inbox?</strong>
-    Check your spam or junk folder. The email comes from <span class="auth-note-sender"><?= htmlspecialchars($_ENV['MAIL_FROM']); ?></span>; marking it as "not spam" helps the next ones arrive.
+    Check your spam or junk folder. The email comes from <span class="auth-note-sender"><?= htmlspecialchars(\App\Mail\Mailer::fromAddress()); ?></span>; marking it as "not spam" helps the next ones arrive.
   </p>
 </div>

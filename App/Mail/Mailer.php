@@ -19,8 +19,13 @@ class Mailer {
         // 465 is implicit TLS; any other port negotiates STARTTLS
         $mail->SMTPSecure = $mail->Port === 465 ? PHPMailer::ENCRYPTION_SMTPS : PHPMailer::ENCRYPTION_STARTTLS;
         $mail->CharSet = PHPMailer::CHARSET_UTF8;
-        $mail->setFrom($_ENV['MAIL_FROM'], $_ENV['MAIL_FROM_NAME'] ?? 'EMPP');
+        $mail->setFrom(self::fromAddress(), ($_ENV['MAIL_FROM_NAME'] ?? '') ?: 'EMPP');
         return $mail;
+    }
+
+    // Sender address; falls back to the SMTP account when MAIL_FROM is empty
+    public static function fromAddress(){
+        return trim((string) ($_ENV['MAIL_FROM'] ?? '')) ?: trim((string) ($_ENV['MAIL_USER'] ?? ''));
     }
 
     // Sends a 6-digit code. $purpose is 'verify' (sign-up) or 'reset' (forgot password).
