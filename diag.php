@@ -112,8 +112,9 @@ if ($autoloadOk && class_exists('Dotenv\Dotenv')) {
         $envOk = true;
         echo "carregado ok\n";
         // Só presenca, nunca o valor.
-        foreach (['BASE_URL', 'DB_HOST', 'DB_USER', 'DB_NAME', 'DB_PASS'] as $k) {
-            printf("%-10s %s\n", $k, isset($_ENV[$k]) && $_ENV[$k] !== '' ? 'definido' : 'AUSENTE/VAZIO');
+        foreach (['BASE_URL', 'DB_HOST', 'DB_USER', 'DB_NAME', 'DB_PASS',
+                  'MAIL_HOST', 'MAIL_PORT', 'MAIL_USER', 'MAIL_PASS', 'MAIL_FROM', 'MAIL_FROM_NAME'] as $k) {
+            printf("%-14s %s\n", $k, isset($_ENV[$k]) && $_ENV[$k] !== '' ? 'definido' : 'AUSENTE/VAZIO');
         }
     } catch (Throwable $e) {
         $reportar($e, 'dotenv');
@@ -125,18 +126,52 @@ if ($autoloadOk && class_exists('Dotenv\Dotenv')) {
 echo "\n=== conexao mysql ===\n";
 if ($envOk) {
     try {
-        new PDO(
+        $pdo = new PDO(
             "mysql:host={$_ENV['DB_HOST']};dbname={$_ENV['DB_NAME']}",
             $_ENV['DB_USER'],
             $_ENV['DB_PASS'],
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
         );
         echo "conectou ok\n";
+        // Colunas da migracao 2026-10-22_email_verification.sql
+        $cols = $pdo->query("SHOW COLUMNS FROM login")->fetchAll(PDO::FETCH_COLUMN);
+        foreach (['log_code_expires', 'log_code_attempts'] as $c) {
+            printf("login.%-18s %s\n", $c, in_array($c, $cols, true) ? 'ok' : 'AUSENTE (rodar migracao)');
+        }
     } catch (Throwable $e) {
         $reportar($e, 'mysql');
     }
 } else {
     echo "pulado (.env nao carregou)\n";
+}
+
+// Login SMTP sem enviar mensagem: conecta, autentica e fecha.
+echo "\n=== smtp (login, sem envio) ===\n";
+if ($envOk && class_exists('PHPMailer\PHPMailer\SMTP') && !empty($_ENV['MAIL_HOST'])) {
+    try {
+        $port = (int) ($_ENV['MAIL_PORT'] ?? 465);
+        $smtp = new PHPMailer\PHPMailer\SMTP();
+        $smtp->Timeout = 15;
+        $host = ($port === 465 ? 'ssl://' : '') . $_ENV['MAIL_HOST'];
+        if (!$smtp->connect($host, $port)) {
+            echo "conexao FALHOU\n";
+        } else {
+            $smtp->hello(gethostname() ?: 'localhost');
+            if ($port !== 465) {
+                $smtp->startTLS();
+                $smtp->hello(gethostname() ?: 'localhost');
+            }
+            echo $smtp->authenticate($_ENV['MAIL_USER'] ?? '', $_ENV['MAIL_PASS'] ?? '')
+                ? "login ok\n"
+                : "login FALHOU (usuario/senha recusados)\n";
+            $smtp->quit();
+            $smtp->close();
+        }
+    } catch (Throwable $e) {
+        $reportar($e, 'smtp');
+    }
+} else {
+    echo "pulado (.env sem MAIL_HOST ou PHPMailer ausente)\n";
 }
 
 // Autodestruicao: uma execucao, um resultado.
