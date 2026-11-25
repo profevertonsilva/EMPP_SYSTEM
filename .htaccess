@@ -6,7 +6,8 @@ RewriteRule (^|/)\.(?!well-known(/|$)) - [F]
 
 # Application code, Composer packages and database scripts are only read by
 # index.php from disk; none of them is meant to be requested over HTTP.
-RewriteRule ^(App|vendor|Banco\sde\sDados)(/|$) - [F,NC]
+# EMPP_V2 is the rebuild in progress (code, tests, dev packages): never served.
+RewriteRule ^(App|vendor|EMPP_V2|Banco\sde\sDados)(/|$) - [F,NC]
 RewriteRule ^(composer\.(json|lock|phar)|package-lock\.json|README\.md|PRODUCT\.md|DESIGN\.md|info\.php)$ - [F,NC]
 
 # resources/ holds static assets and user uploads: no script ever runs from it
