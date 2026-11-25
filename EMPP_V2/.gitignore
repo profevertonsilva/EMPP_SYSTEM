@@ -1,3 +1,9 @@
 /vendor/
 /.phpunit.cache/
 .env
+
+# Uploaded SEM images and profile photos (private: served through the application)
+/storage/images/*
+/storage/photos/*
+!/storage/images/.gitkeep
+!/storage/photos/.gitkeep
