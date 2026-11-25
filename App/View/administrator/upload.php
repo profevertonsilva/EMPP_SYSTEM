@@ -1,38 +1,56 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $directoryDestinationAdmin = 'resources/dashboard/assets/img/administrator/';
-    $directoryDestinationReserarcher = 'resources/dashboard/assets/img/researcher/';
-    if($_SESSION['log_type'] == 'A'){
-        $directoryDestination = $directoryDestinationAdmin;
-    }else{
-        $directoryDestination = $directoryDestinationReserarcher;
-    } 
-    $file = $_FILES['profile_photo'];
-    $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    $filename = hash('md5',uniqid()) . '.' . $extension;
-    $pathComplete = $directoryDestination . $filename;
+/*
+ * Profile photo upload (POST /dashboard/administrator/upload-photo).
+ *
+ * The file is checked by its content, never by the name or the type the browser
+ * sends: both are chosen by the client. The extension on disk comes from the
+ * detected image type, so an upload can never be stored as .php (or anything
+ * else the server would execute).
+ */
+$photoForm = '/dashboard/administrator/my-photo';
 
-    // Creates the directory if it does not exist
-    if (!is_dir($directoryDestination)) {
-        mkdir($directoryDestination, 0755, true);
-    }
-
-    // Allowed file types
-    $typesallowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-
-    // Checks if the file is a valid image
-    if (in_array($_FILES['profile_photo']['type'], $typesallowed)) {
-        if (move_uploaded_file($_FILES['profile_photo']['tmp_name'], $pathComplete)) {
-            
-            $_SESSION['photo'] = $filename;
-            header('Location: '.$_ENV['BASE_URL'].'dashboard/administrator/update-foto/' . $_POST['fk_login_log_id']);
-        } else {
-            echo "Error sending photo.";
-        }
-    } else {
-        echo "File format not allowed. Please upload a JPEG, PNG, or GIF image.";
-    }
-} else {
-    echo "No files sent.";
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_FILES['profile_photo'])) {
+    header("Location: $photoForm");
+    exit;
 }
-?>
+
+$file = $_FILES['profile_photo'];
+$maxBytes = 2 * 1024 * 1024; // same limit the form announces
+
+if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
+    || !is_uploaded_file($file['tmp_name'])
+    || $file['size'] > $maxBytes) {
+    header("Location: $photoForm?success=2");
+    exit;
+}
+
+// Allowed image types, detected from the file's bytes, and the extension each one gets
+$allowed = [
+    IMAGETYPE_JPEG => 'jpg',
+    IMAGETYPE_PNG => 'png',
+    IMAGETYPE_WEBP => 'webp',
+];
+$info = @getimagesize($file['tmp_name']);
+$extension = $info ? ($allowed[$info[2]] ?? null) : null;
+if ($extension === null) {
+    header("Location: $photoForm?success=2");
+    exit;
+}
+
+$directoryDestination = ($_SESSION['log_type'] ?? '') === 'A'
+    ? 'resources/dashboard/assets/img/administrator/'
+    : 'resources/dashboard/assets/img/researcher/';
+if (!is_dir($directoryDestination)) {
+    mkdir($directoryDestination, 0755, true);
+}
+
+$filename = bin2hex(random_bytes(16)) . '.' . $extension;
+if (!move_uploaded_file($file['tmp_name'], $directoryDestination . $filename)) {
+    header("Location: $photoForm?success=0");
+    exit;
+}
+
+$_SESSION['photo'] = $filename;
+// The photo always belongs to the signed-in user (updateMyPhoto reads the session)
+header('Location: /dashboard/administrator/update-foto/' . (int) $_SESSION['log_id']);
+exit;

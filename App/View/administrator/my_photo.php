@@ -72,7 +72,8 @@ $(document).ready(function() {
 
   const messages = {
     '0': { title: 'Could not update the photo', text: 'Please try again.', icon: 'error' },
-    '1': { title: 'Photo updated', text: 'Your new profile photo is saved.', icon: 'success' }
+    '1': { title: 'Photo updated', text: 'Your new profile photo is saved.', icon: 'success' },
+    '2': { title: 'Invalid image', text: 'Use a JPG, PNG or WEBP image of up to 2 MB.', icon: 'error' }
   };
   const status = new URLSearchParams(window.location.search).get('success');
   if (messages[status]) {
