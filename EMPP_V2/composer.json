@@ -1,0 +1,28 @@
+{
+    "name": "empp/empp-v2",
+    "description": "EMPP v2 - Electrospun Membrane Property Predictor (rebuild)",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Empp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Empp\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
