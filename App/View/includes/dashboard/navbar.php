@@ -53,7 +53,7 @@ if (isset($empp_sections[$empp_active])) {
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
                   <a class="nav-link dropdown-toggle hide-arrow d-flex align-items-center gap-3" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <span class="empp-user-meta d-none d-md-block">
-                      <span class="empp-user-name"><?= $this->getView()->researcher->res_name; ?></span>
+                      <span class="empp-user-name"><?= htmlspecialchars((string) ($empp_me ? $empp_me->res_name : '')); ?></span>
                       <span class="empp-eyebrow"><?= $empp_is_admin ? 'Admin' : 'Researcher'; ?></span>
                     </span>
                     <div class="avatar <?= $empp_avatar_state; ?>"<?= $empp_avatar_title; ?>>
@@ -70,7 +70,7 @@ if (isset($empp_sections[$empp_active])) {
                             </div>
                           </div>
                           <div class="flex-grow-1">
-                            <span class="fw-semibold d-block"><?= $this->getView()->researcher->res_name; ?></span>
+                            <span class="fw-semibold d-block"><?= htmlspecialchars((string) ($empp_me ? $empp_me->res_name : '')); ?></span>
                             <small class="text-muted"><?= $empp_is_admin ? 'Admin' : 'Researcher'; ?></small>
                           </div>
                         </div>

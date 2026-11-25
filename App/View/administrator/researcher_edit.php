@@ -27,11 +27,11 @@
           <form id="formAuthentication" class="mb-3" action="/dashboard/administrator/update-profile" method="POST">
             <div class="mb-3">
               <label for="email" class="form-label">Name</label>
-              <input type="text" class="form-control" id="name" name="name" placeholder="Enter your Name" value="<?= $this->getView()->researchers->res_name; ?>" required />
+              <input type="text" class="form-control" id="name" name="name" placeholder="Enter your Name" value="<?= htmlspecialchars((string) $edit->res_name); ?>" required />
             </div>
             <div class="mb-3">
               <label for="email" class="form-label">Institution</label>
-              <input type="text" class="form-control" id="institution" name="institution" placeholder="Enter your Institution" value="<?= $this->getView()->researchers->res_institution; ?>" required />
+              <input type="text" class="form-control" id="institution" name="institution" placeholder="Enter your Institution" value="<?= htmlspecialchars((string) $edit->res_institution); ?>" required />
             </div>
             <div class="mb-3">
               <label for="email" class="form-label">Academic Degree</label>
@@ -48,14 +48,14 @@
                   class="form-control" 
                   id="specific" 
                   name="specific" 
-                  value="<?= (!in_array($this->getView()->researchers->res_academic, ["Undergraduate Student", "Bachelor", "Master", "PHD Degree"])) ? $this->getView()->researchers->res_academic : '' ?>" 
+                  value="<?= (!in_array($this->getView()->researchers->res_academic, ["Undergraduate Student", "Bachelor", "Master", "PHD Degree"])) ? htmlspecialchars((string) $edit->res_academic) : '' ?>" 
                   placeholder="Enter your Specific Degree" 
                   style="display: none" 
               />
             </div>
             <div class="mb-3">
               <label for="email" class="form-label">Purpose</label>
-              <textarea class="form-control" id="purpose" name="purpose" placeholder="Enter your Purpose" required/><?= $this->getView()->researchers->res_purpose; ?></textarea>
+              <textarea class="form-control" id="purpose" name="purpose" placeholder="Enter your Purpose" required><?= htmlspecialchars((string) $edit->res_purpose); ?></textarea>
             </div>
 
             <div class="mb-3">
@@ -63,9 +63,9 @@
               <select class="form-select" id="country" name="country" required>
                 <option value="">Select your country</option>
                 <?php foreach ($this->getView()->country as $country): ?>
-                  <option value="<?= $country->cou_id; ?>" <?php if ($country->cou_id === $this->getView()->researchers->fk_country_cou_id) {
+                  <option value="<?= (int) $country->cou_id; ?>" <?php if ($country->cou_id === $this->getView()->researchers->fk_country_cou_id) {
                                                               echo 'selected';
-                                                            } ?>><?= $country->cou_name; ?></option>
+                                                            } ?>><?= htmlspecialchars((string) $country->cou_name); ?></option>
                 <?php endforeach; ?>
               </select>
             </div>
